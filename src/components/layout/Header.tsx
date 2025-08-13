@@ -24,10 +24,6 @@ export default function Header() {
   const publicNavItems = useMemo(
     () => [
       { href: '/', label: 'Home' },
-      { href: '/programs', label: 'Programs' },
-      { href: '/about', label: 'About' },
-      { href: '/success-stories', label: 'Success Stories' },
-      { href: '/contact', label: 'Contact' },
     ],
     []
   );
