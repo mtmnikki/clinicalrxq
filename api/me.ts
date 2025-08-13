@@ -7,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const cookie = req.headers.cookie || '';
-    const token = cookie.split(';').map((s: string) => s.trim()).find((s: string) => s.startsWith('crxq_token='))?.split('=')[1];
+   const token = cookie.split(';').map((s: string) => s.trim()).find((s: string) => s.startsWith('crxq_token='))?.split('=')[1];
     if (!token) return res.status(401).json({ error: 'No session' });
 
     const { payload } = await jwtVerify(token, JWT_SECRET, { issuer: 'clinicalrxq', audience: 'member' });
@@ -21,4 +21,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: 'Invalid session' });
   }
 }
+
 
