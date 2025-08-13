@@ -4,14 +4,15 @@ import Airtable from 'airtable';
 import { compare } from 'bcryptjs';
 import { SignJWT } from 'jose';
 
-const base = new Airtable({ apiKey: process.env.AIRTABLE_TOKEN }).base(process.env.AIRTABLE_BASE_ID!);
-const MEM = process.env.AIRTABLE_MEMBERS_TABLE || 'Members';
+// Environment variables for Airtable configuration
+const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_MEMBERS_TABLE_ID = process.env.AIRTABLE_MEMBERS_TABLE_ID;
+const AIRTABLE_EMAIL_FIELD_ID = process.env.AIRTABLE_EMAIL_FIELD_ID;
+const AIRTABLE_PW_HASH_FIELD_ID = process.env.AIRTABLE_PW_HASH_FIELD_ID;
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-// Airtable formulas use double quotes for strings.
-// Escape any double quotes in the email just in case.
-const esc = (s: string) => s.replace(/"/g, '\\"');
-
+// Helper to check if subscription is active
 function isActive(subscriptionStatus: any, subEnd: any) {
   const status = (typeof subscriptionStatus === 'string') ? subscriptionStatus : '';
   if (status !== 'Active') return false;
@@ -22,54 +23,78 @@ function isActive(subscriptionStatus: any, subEnd: any) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check for required environment variables
+  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID || !AIRTABLE_MEMBERS_TABLE_ID || !AIRTABLE_EMAIL_FIELD_ID || !AIRTABLE_PW_HASH_FIELD_ID) {
+    return res.status(500).json({ error: 'Server configuration error. Missing Airtable variables.' });
+  }
 
   try {
     const { email, password } = req.body as { email?: string; password?: string };
-    if (!email || !password) return res.status(400).json({ error: 'Missing email or password' });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Missing email or password' });
+    }
 
     const emailLc = email.trim().toLowerCase();
+    const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID);
 
-    // Find by Email Address (case-insensitive)
-    const records = await base.table(MEM).select({
+    // Find user by email using the specific Field ID
+    const records = await base.table(AIRTABLE_MEMBERS_TABLE_ID).select({
       maxRecords: 1,
-      filterByFormula: `LOWER({Email Address}) = "${esc(emailLc)}"`
+      // Use Field ID in the formula for reliability
+      filterByFormula: `LOWER({${AIRTABLE_EMAIL_FIELD_ID}}) = "${emailLc.replace(/"/g, '\\"')}"`,
+      // Request only the fields we need, using their IDs
+      fields: [AIRTABLE_PW_HASH_FIELD_ID, 'Subscription Status', 'Subscription End']
     }).firstPage();
 
-    if (!records.length) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!records.length) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-    const m = records[0];
-    const hash = (m.get('passwordHash') || '') as string;
-    if (!hash) return res.status(401).json({ error: 'Account not configured' });
+    const memberRecord = records[0];
+    const hash = (memberRecord.get(AIRTABLE_PW_HASH_FIELD_ID) || '') as string;
+    
+    if (!hash) {
+      return res.status(401).json({ error: 'Account not configured for login' });
+    }
 
-    const ok = await compare(password, hash);
-    if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
+    const isPasswordValid = await compare(password, hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-    // Enforce subscription state
-    const status = m.get('Subscription Status');
-    const subEnd = m.get('Subscription End');
+    // Enforce subscription state (uses field names, assuming they are consistent)
+    const status = memberRecord.get('Subscription Status');
+    const subEnd = memberRecord.get('Subscription End');
     if (!isActive(status, subEnd)) {
       return res.status(403).json({ error: 'Subscription inactive or expired' });
     }
 
     // Update Last Login (non-fatal if it fails)
     try {
-      await base.table(MEM).update(m.id, { 'Last Login': new Date().toISOString() });
-    } catch {}
+      await base.table(AIRTABLE_MEMBERS_TABLE_ID).update(memberRecord.id, { 'Last Login': new Date().toISOString() });
+    } catch (updateError) {
+      console.warn('Failed to update Last Login time:', updateError);
+    }
 
     // Issue JWT
-    const token = await new SignJWT({ sub: m.id, email: emailLc })
+    const token = await new SignJWT({ sub: memberRecord.id, email: emailLc })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuer('clinicalrxq')
       .setAudience('member')
       .setExpirationTime('1h')
       .sign(JWT_SECRET);
 
-    // HttpOnly cookie (note: Secure cookies require HTTPS; test on deployed site)
+    // Set HttpOnly cookie
     res.setHeader('Set-Cookie', `crxq_token=${token}; Path=/; HttpOnly; SameSite=Lax; Secure`);
 
-    return res.status(200).json({ memberId: m.id, email: emailLc });
+    return res.status(200).json({ memberId: memberRecord.id, email: emailLc });
+
   } catch (e: any) {
-    return res.status(500).json({ error: e?.message || 'Server error' });
+    console.error('Login API error:', e);
+    return res.status(500).json({ error: e?.message || 'A server error occurred' });
   }
 }
