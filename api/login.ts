@@ -44,10 +44,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Find user by email using the specific Field ID
     const records = await base.table(AIRTABLE_MEMBERS_TABLE_ID).select({
       maxRecords: 1,
-      // Use Field ID in the formula for reliability
       filterByFormula: `LOWER({${AIRTABLE_EMAIL_FIELD_ID}}) = "${emailLc.replace(/"/g, '\\"')}"`,
-      // Request only the fields we need, using their IDs
-      fields: [AIRTABLE_PW_HASH_FIELD_ID, 'Subscription Status', 'Subscription End']
+      // Request only the fields we need
+      fields: [AIRTABLE_PW_HASH_FIELD_ID, 'subscriptionStatus', 'subscriptionEnd']
     }).firstPage();
 
     if (!records.length) {
@@ -66,9 +65,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Enforce subscription state (uses field names, assuming they are consistent)
-    const status = memberRecord.get('Subscription Status');
-    const subEnd = memberRecord.get('Subscription End');
+    // Enforce subscription state using CORRECTED field names
+    const status = memberRecord.get('subscriptionStatus');
+    const subEnd = memberRecord.get('subscriptionEnd');
     if (!isActive(status, subEnd)) {
       return res.status(403).json({ error: 'Subscription inactive or expired' });
     }
