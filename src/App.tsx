@@ -4,8 +4,10 @@
  * - Mounts a global Toaster (sonner) so toasts can persist across route changes.
  * - Adds ScrollToTop to ensure navigation lands at the top of pages.
  * - Adds BackToTop floating button across all pages.
+ * - Checks authentication status on app load to maintain login state
  */
 
+import { useEffect } from 'react';
 import { HashRouter, Route, Routes } from 'react-router';
 import Home from './pages/Home';
 import Programs from './pages/Programs';
@@ -43,6 +45,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
  * App root component
  */
 export default function App() {
+  const { checkAuth } = useAuthStore();
+
+  // Check authentication when app loads to maintain login state across page refreshes
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <HashRouter>
       <ScrollToTop />
