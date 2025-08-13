@@ -57,8 +57,12 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.3",
     "zustand": "^5.0.5",
-    "airtable": "latest",
-    "jsonwebtoken": "latest"
+    "eslint": "latest",
+    "@typescript-eslint/parser": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "eslint-plugin-jsx-a11y": "latest"
   },
   "devDependencies": {
     "@types/react": "^19.1.3",
