@@ -1,6 +1,6 @@
 /**
  * My Account page
- * - Combines previous Dashboard "Account" and "Billing" content
+ * - CORRECTED to display 'username' instead of 'firstName'/'lastName'
  * - Protected route (configured in App.tsx)
  * - Adds breadcrumb navigation anchored at Dashboard.
  */
@@ -48,25 +48,14 @@ export default function Account() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">First Name</label>
-                    <input
-                      type="text"
-                      value={String((user?.['firstName'] ?? '') as any)}
-                      className="w-full p-2 border rounded-md"
-                      readOnly
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Last Name</label>
-                    <input
-                      type="text"
-                      value={String((user?.['lastName'] ?? '') as any)}
-                      className="w-full p-2 border rounded-md"
-                      readOnly
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={String((user?.['username'] ?? '') as any)}
+                    className="w-full p-2 border rounded-md bg-gray-100"
+                    readOnly
+                  />
                 </div>
 
                 <div>
@@ -74,14 +63,14 @@ export default function Account() {
                   <input
                     type="email"
                     value={String((user?.email ?? '') as any)}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full p-2 border rounded-md bg-gray-100"
                     readOnly
                   />
                 </div>
 
-                <Button>
+                <Button disabled>
                   <Settings className="h-4 w-4 mr-2" />
-                  Edit Profile
+                  Edit Profile (Coming Soon)
                 </Button>
               </div>
             </CardContent>
@@ -103,7 +92,7 @@ export default function Account() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-medium">Clinical Pharmacy Fundamentals</p>
-                        <p className="text-sm text-gray-600">Next billing: January 15, 2024</p>
+                        <p className="text-sm text-gray-600">Next billing: January 15, 2025</p>
                       </div>
                       <Badge variant="default">Active</Badge>
                     </div>
@@ -118,7 +107,7 @@ export default function Account() {
                         <p className="font-medium">•••• •••• •••• 1234</p>
                         <p className="text-sm text-gray-600">Expires 12/26</p>
                       </div>
-                      <Button variant="outline" size="sm" className="bg-transparent">
+                      <Button variant="outline" size="sm" className="bg-transparent" disabled>
                         Update
                       </Button>
                     </div>
