@@ -6,7 +6,7 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Heart } from 'lucide-
 
 export default function Footer() {
   const footerLinks = {
-    'Programs': [
+    'Member-Content': [
       { href: '/programs', label: 'All Programs' },
       { href: '/programs/mtm', label: 'MTM The Future Today' },
       { href: '/programs/timemymeds', label: 'TimeMyMeds Sync' },
@@ -14,16 +14,7 @@ export default function Footer() {
       { href: '/programs/hba1c', label: 'HbA1c Testing' }
     ],
     'Resources': [
-      { href: '/resources', label: 'Resource Library' },
-      { href: '/success-stories', label: 'Success Stories' },
-      { href: '/about', label: 'About Our Team' },
-      { href: '/contact', label: 'Support Center' }
-    ],
-    'Company': [
-      { href: '/about', label: 'About ClinicalRxQ' },
-      { href: '/contact', label: 'Contact Us' },
-      { href: '/privacy', label: 'Privacy Policy' },
-      { href: '/terms', label: 'Terms of Service' }
+      { href: '/resources', label: 'Resource Library' }
     ]
   };
 
