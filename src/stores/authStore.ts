@@ -1,126 +1,157 @@
 /**
- * Main application component with routing
- * - Wraps routes with a global ErrorBoundary to prevent full app crashes from runtime errors.
- * - Mounts a global Toaster (sonner) so toasts can persist across route changes.
- * - Adds ScrollToTop to ensure navigation lands at the top of pages.
- * - Adds BackToTop floating button across all pages.
- * - Checks authentication status on app load to maintain login state
+ * Production Authentication Store - Calls Real API Endpoints
+ * REPLACE your entire src/stores/authStore.ts file with this code
  */
+import { create } from 'zustand';
+import { User } from '../types';
 
-import { useEffect } from 'react';
-import { HashRouter, Route, Routes } from 'react-router';
-import Home from './pages/Home';
-import Programs from './pages/Programs';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import SuccessStories from './pages/SuccessStories';
-import Login from './pages/Login';
-import Enroll from './pages/Enroll';
-import Dashboard from './pages/Dashboard';
-import Resources from './pages/Resources';
-import ProgramDetail from './pages/ProgramDetail';
-import MemberContent from './pages/MemberContent';
-import Account from './pages/Account';
-import Bookmarks from './pages/Bookmarks';
-import { useAuthStore } from './stores/authStore';
-import ErrorBoundary from './components/common/ErrorBoundary';
-import { Toaster } from 'sonner';
-import ScrollToTop from './components/common/ScrollToTop';
-import BackToTop from './components/common/BackToTop';
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  checkAuth: () => Promise<void>;
+  register: (userData: Partial<User>) => Promise<boolean>;
+}
 
-/**
- * Protected route component for member-only pages
- */
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  
+  /**
+   * Real login function that calls your /api/login endpoint
+   */
+  login: async (email: string, password: string) => {
+    set({ isLoading: true });
+    
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include', // Essential for HttpOnly cookies
+      });
 
-  if (!isAuthenticated) {
-    return <Login />;
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Login failed:', data.error);
+        set({ isLoading: false });
+        return false;
+      }
+
+      // Success! Create user object from API response
+      const user: User = {
+        id: data.memberId,
+        email: data.email,
+        firstName: 'Member', // You can enhance this by fetching from Airtable
+        lastName: 'User',
+        role: 'member',
+        subscription: {
+          id: data.memberId,
+          planName: 'Premium',
+          status: 'active',
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          programs: [] // You can fetch this from Airtable if needed
+        },
+        createdAt: new Date()
+      };
+      
+      set({ user, isAuthenticated: true, isLoading: false });
+      return true;
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      set({ isLoading: false });
+      return false;
+    }
+  },
+  
+  /**
+   * Check authentication status using your /api/me endpoint
+   */
+  checkAuth: async () => {
+    set({ isLoading: true });
+    
+    try {
+      const response = await fetch('/api/me', {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        const user: User = {
+          id: data.memberId,
+          email: data.email,
+          firstName: 'Member',
+          lastName: 'User',
+          role: 'member',
+          subscription: {
+            id: data.memberId,
+            planName: 'Premium',
+            status: 'active',
+            startDate: new Date(),
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+            programs: []
+          },
+          createdAt: new Date()
+        };
+        
+        set({ user, isAuthenticated: true, isLoading: false });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      set({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  },
+  
+  /**
+   * Logout function that clears the JWT cookie
+   */
+  logout: async () => {
+    try {
+      // Call logout endpoint to clear cookie
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      set({ user: null, isAuthenticated: false });
+    }
+  },
+  
+  /**
+   * Registration function (if you want to add registration)
+   */
+  register: async (userData: Partial<User>) => {
+    set({ isLoading: true });
+    
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+        credentials: 'include',
+      });
+
+      set({ isLoading: false });
+      return response.ok;
+    } catch (error) {
+      console.error('Registration error:', error);
+      set({ isLoading: false });
+      return false;
+    }
   }
-
-  return <>{children}</>;
-}
-
-/**
- * App root component
- */
-export default function App() {
-  const { checkAuth } = useAuthStore();
-
-  // Check authentication when app loads to maintain login state across page refreshes
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  return (
-    <HashRouter>
-      <ScrollToTop />
-      <ErrorBoundary>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/programs" element={<Programs />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/success-stories" element={<SuccessStories />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/enroll" element={<Enroll />} />
-
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/member-content"
-            element={
-              <ProtectedRoute>
-                <MemberContent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/resources"
-            element={
-              <ProtectedRoute>
-                <Resources />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/program/:id"
-            element={
-              <ProtectedRoute>
-                <ProgramDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/bookmarks"
-            element={
-              <ProtectedRoute>
-                <Bookmarks />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </ErrorBoundary>
-      {/* Global toaster for compact notifications across the app */}
-      <Toaster position="top-center" richColors={false} closeButton={false} duration={1800} />
-      {/* Global back-to-top button */}
-      <BackToTop />
-    </HashRouter>
-  );
-}
+}));
