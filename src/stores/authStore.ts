@@ -19,13 +19,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
-  
+
   /**
    * Real login function that calls your /api/login endpoint
    */
   login: async (email: string, password: string) => {
     set({ isLoading: true });
-    
+
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -48,8 +48,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const user: User = {
         id: data.memberId,
         email: data.email,
-        firstName: 'Member', // You can enhance this by fetching from Airtable
-        lastName: 'User',
+        // You can enhance this by fetching from Airtable
+        name: 'Member User',
         role: 'member',
         subscription: {
           id: data.memberId,
@@ -57,27 +57,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           status: 'active',
           startDate: new Date(),
           endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-          programs: [] // You can fetch this from Airtable if needed
+          // You can fetch this from Airtable if needed
+          programs: [],
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       };
-      
+
       set({ user, isAuthenticated: true, isLoading: false });
       return true;
-      
+
     } catch (error) {
       console.error('Login error:', error);
       set({ isLoading: false });
       return false;
     }
   },
-  
+
   /**
    * Check authentication status using your /api/me endpoint
    */
   checkAuth: async () => {
     set({ isLoading: true });
-    
+
     try {
       const response = await fetch('/api/me', {
         credentials: 'include',
@@ -85,12 +86,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (response.ok) {
         const data = await response.json();
-        
+
         const user: User = {
           id: data.memberId,
           email: data.email,
-          firstName: 'Member',
-          lastName: 'User',
+          name: 'Member User',
           role: 'member',
           subscription: {
             id: data.memberId,
@@ -98,11 +98,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             status: 'active',
             startDate: new Date(),
             endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-            programs: []
+            programs: [],
           },
-          createdAt: new Date()
+          createdAt: new Date(),
         };
-        
+
         set({ user, isAuthenticated: true, isLoading: false });
       } else {
         set({ user: null, isAuthenticated: false, isLoading: false });
@@ -112,7 +112,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
-  
+
   /**
    * Logout function that clears the JWT cookie
    */
@@ -129,13 +129,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ user: null, isAuthenticated: false });
     }
   },
-  
+
   /**
    * Registration function (if you want to add registration)
    */
   register: async (userData: Partial<User>) => {
     set({ isLoading: true });
-    
+
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -153,5 +153,5 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return false;
     }
-  }
+  },
 }));
