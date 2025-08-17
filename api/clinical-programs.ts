@@ -19,14 +19,18 @@ interface AirtableAttachment {
   filename?: string;
 }
 
-/** Helper: get first attachment URL if present */
+/**
+ * Get first attachment URL if present.
+ */
 function firstAttachmentUrl(attachments: unknown): string | undefined {
   const list = (attachments as AirtableAttachment[]) || [];
   if (Array.isArray(list) && list.length > 0 && list[0]?.url) return list[0].url;
   return undefined;
 }
 
-/** Helper: read query string safely */
+/**
+ * Helper: read query string safely from Node req
+ */
 function getQuery(req: any): Record<string, string | undefined> {
   const url = new URL(req.url || '', 'http://localhost');
   const params: Record<string, string | undefined> = {};
@@ -34,7 +38,15 @@ function getQuery(req: any): Record<string, string | undefined> {
   return params;
 }
 
-export default async function handler(req: IncomingMessage & { method?: string; }, res: ServerResponse) {
+/**
+ * Escape a string for Airtable filterByFormula single-quoted literals.
+ * Replaces single quotes with escaped version.
+ */
+function escapeAirtableFormulaString(value: string): string {
+  return value.replace(/'/g, "\\'");
+}
+
+export default async function handler(req: IncomingMessage & { method?: string }, res: ServerResponse) {
   try {
     if (req.method !== 'GET') {
       res.statusCode = 405;
@@ -47,9 +59,11 @@ export default async function handler(req: IncomingMessage & { method?: string; 
     if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({
-        error: 'Airtable is not configured. Set AIRTABLE_API_KEY and AIRTABLE_BASE_ID in your Vercel project.',
-      }));
+      res.end(
+        JSON.stringify({
+          error: 'Airtable is not configured. Set AIRTABLE_API_KEY and AIRTABLE_BASE_ID in your Vercel project.',
+        })
+      );
       return;
     }
 
@@ -57,7 +71,7 @@ export default async function handler(req: IncomingMessage & { method?: string; 
     const query = getQuery(req);
     const slug = (query.slug || '').trim();
 
-    // If no slug, return a compact list of programs
+    // If no slug, return a compact list of programs for listings
     if (!slug) {
       const records = await base('ClinicalPrograms')
         .select({
@@ -74,14 +88,17 @@ export default async function handler(req: IncomingMessage & { method?: string; 
 
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
+      // Public caching via Vercel Edge/CDN
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
       res.end(JSON.stringify({ items: list }));
       return;
     }
 
     // Otherwise, return full detail for a single program by slug
+    const esc = escapeAirtableFormulaString(slug);
     const progRecords = await base('ClinicalPrograms')
       .select({
-        filterByFormula: `{programSlug} = '${slug}'`,
+        filterByFormula: `{programSlug} = '${esc}'`,
         maxRecords: 1,
       })
       .firstPage();
@@ -97,16 +114,20 @@ export default async function handler(req: IncomingMessage & { method?: string; 
     const title = (p.get('programName') as string) || '';
     const subtitle = (p.get('programDescription') as string) || '';
     const overviewRaw = (p.get('programOverview') as string) || '';
+
     // Split overview into paragraphs by empty line or newline
     const overview: string[] = overviewRaw
-      ? overviewRaw.split(/\n\s*\n|\r\n\r\n|\n/g).map((s) => s.trim()).filter(Boolean)
+      ? overviewRaw
+          .split(/\n\s*\n|\r\n\r\n|\n/g)
+          .map((s) => s.trim())
+          .filter(Boolean)
       : [];
 
     // Fetch related records by programSlug in child tables
     const [modules, manuals, forms, resources] = await Promise.all([
       base('TrainingModules')
         .select({
-          filterByFormula: `{programSlug} = '${slug}'`,
+          filterByFormula: `{programSlug} = '${esc}'`,
           fields: ['moduleName', 'moduleLength', 'moduleFile', 'moduleLink', 'sortOrder'],
           sort: [{ field: 'sortOrder', direction: 'asc' } as any],
           pageSize: 100,
@@ -114,21 +135,21 @@ export default async function handler(req: IncomingMessage & { method?: string; 
         .all(),
       base('ProtocolManuals')
         .select({
-          filterByFormula: `{programSlug} = '${slug}'`,
+          filterByFormula: `{programSlug} = '${esc}'`,
           fields: ['protocolName', 'protocolFile', 'fileLink'],
           pageSize: 100,
         })
         .all(),
       base('DocumentationForms')
         .select({
-          filterByFormula: `{programSlug} = '${slug}'`,
+          filterByFormula: `{programSlug} = '${esc}'`,
           fields: ['formName', 'formFile', 'formCategory', 'formLink'],
           pageSize: 200,
         })
         .all(),
       base('AdditionalResources')
         .select({
-          filterByFormula: `{programSlug} = '${slug}'`,
+          filterByFormula: `{programSlug} = '${esc}'`,
           fields: ['resourceName', 'resourceFile', 'resourceLink'],
           pageSize: 100,
         })
@@ -147,29 +168,42 @@ export default async function handler(req: IncomingMessage & { method?: string; 
         name: (m.get('moduleName') as string) || '',
         duration: (m.get('moduleLength') as string) || undefined,
         description: undefined as string | undefined,
-        url: (m.get('moduleLink') as string) || firstAttachmentUrl(m.get('moduleFile')) || undefined,
+        url:
+          (m.get('moduleLink') as string) ||
+          firstAttachmentUrl(m.get('moduleFile')) ||
+          undefined,
       })),
       manuals: manuals.map((doc: any) => ({
         id: doc.id,
         name: (doc.get('protocolName') as string) || '',
-        fileUrl: (doc.get('fileLink') as string) || firstAttachmentUrl(doc.get('protocolFile')) || undefined,
+        fileUrl:
+          (doc.get('fileLink') as string) ||
+          firstAttachmentUrl(doc.get('protocolFile')) ||
+          undefined,
       })),
       forms: forms.map((f: any) => ({
         id: f.id,
         name: (f.get('formName') as string) || '',
         category: (f.get('formCategory') as string) || undefined,
-        fileUrl: (f.get('formLink') as string) || firstAttachmentUrl(f.get('formFile')) || undefined,
+        fileUrl:
+          (f.get('formLink') as string) ||
+          firstAttachmentUrl(f.get('formFile')) ||
+          undefined,
       })),
       resources: resources.map((r: any) => ({
         id: r.id,
         name: (r.get('resourceName') as string) || '',
         type: undefined as string | undefined,
-        url: (r.get('resourceLink') as string) || firstAttachmentUrl(r.get('resourceFile')) || undefined,
+        url:
+          (r.get('resourceLink') as string) ||
+          firstAttachmentUrl(r.get('resourceFile')) ||
+          undefined,
       })),
     };
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
     res.end(JSON.stringify(detail));
   } catch (err: any) {
     // eslint-disable-next-line no-console
