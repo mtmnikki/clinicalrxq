@@ -1,189 +1,181 @@
 /**
- * Resources Library page (Airtable-backed with fallback) with AppShell
- * - Data flow:
- *   1) Try fetching unified resources via /api/resource-library.
- *   2) Fallback to local static items if API is not configured or request fails.
- * - Tabs mirrored to our categories mapping from Airtable tables.
+ * Resource Library page
+ * - Fetches aggregated items from /api/resource-library
+ * - Supports category tabs and a simple client-side search
  */
 
-import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import AppShell from '../components/layout/AppShell';
-import MemberSidebar from '../components/layout/MemberSidebar';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Download, AlertCircle } from 'lucide-react';
-import Breadcrumbs from '../components/common/Breadcrumbs';
-import { fetchResourceLibrary, type ResourceLibraryItem } from '../services/airtable/client';
+import React from 'react';
 
-/** Available filter tabs mapped to category values */
-const TABS: { key: 'all' | ResourceLibraryItem['category']; label: string }[] = [
-  { key: 'all', label: 'All Resources' },
-  { key: 'handouts', label: 'Patient Handouts' },
-  { key: 'clinical', label: 'Clinical Resources' },
-  { key: 'billing', label: 'Medical Billing' },
-];
-
-/** Map query string "cat" to a tab key */
-function fromQuery(cat: string | null): (typeof TABS)[number]['key'] {
-  const c = (cat || '').toLowerCase();
-  return c === 'handouts' || c === 'clinical' || c === 'billing' ? (c as any) : 'all';
+type Category = 'handouts' | 'clinical' | 'billing';
+interface LibraryItem {
+  /** Airtable record id */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Category tag */
+  category: Category;
+  /** Link or file URL */
+  url?: string;
 }
 
-/** Local fallback items when the API is not available */
-const FALLBACK: ResourceLibraryItem[] = [
-  { id: 'res-1', name: 'Hypertension Management Algorithm', category: 'clinical', url: 'https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/42e458ac-7d4e-461a-97a1-1f8e186def2e.jpg' },
-  { id: 'res-2', name: 'A1c Result CPT Code Billing', category: 'billing', url: 'https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/056013bb-8d36-4796-8607-1d1923ded32d.jpg' },
-  { id: 'res-3', name: 'My Blood Sugar Log', category: 'handouts', url: 'https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/d7fe161e-f401-44c2-95ef-d201ff49dd4b.jpg' },
-  { id: 'res-4', name: 'Flu Treatment - Peds', category: 'clinical', url: 'https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/74fa0923-8c48-499f-9b17-9b3bca2e6e32.jpg' },
-];
+interface ApiResponse {
+  /** Flattened list of items from handouts, clinical guidelines, and billing resources */
+  items: LibraryItem[];
+}
 
-export default function Resources() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  /** Initialize from URL (?cat=handouts|clinical|billing) */
-  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]['key']>(() =>
-    fromQuery(new URLSearchParams(location.search).get('cat'))
+/**
+ * Small card component for a resource download
+ */
+function ResourceCard({ item }: { item: LibraryItem }) {
+  return (
+    <a
+      href={item.url || '#'}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors p-4 shadow-sm"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-slate-900 font-medium">{item.name}</div>
+          <div className="text-slate-500 text-sm capitalize">{item.category}</div>
+        </div>
+        <span className="text-primary group-hover:translate-x-0.5 transition-transform text-sm">
+          Download →
+        </span>
+      </div>
+    </a>
   );
-  const [query, setQuery] = useState<string>('');
-  const [items, setItems] = useState<ResourceLibraryItem[]>([]);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+}
 
-  /** Keep activeTab synced when the URL changes externally */
-  useEffect(() => {
-    const qs = new URLSearchParams(location.search);
-    const next = fromQuery(qs.get('cat'));
-    setActiveTab(next);
-  }, [location.search]);
+/**
+ * Resource Library page component
+ */
+export default function Resources(): JSX.Element {
+  const [category, setCategory] = React.useState<'' | Category>('');
+  const [q, setQ] = React.useState<string>('');
+  const [items, setItems] = React.useState<LibraryItem[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  /** Load from API with fallback */
-  useEffect(() => {
-    let mounted = true;
+  // Load library items from API
+  React.useEffect(() => {
+    let isMounted = true;
     async function load() {
-      setLoading(true);
-      setApiError(null);
       try {
-        const { items: data } = await fetchResourceLibrary(
-          activeTab === 'all' ? undefined : { cat: activeTab }
-        );
-        if (!mounted) return;
-        setItems(data);
+        setLoading(true);
+        setError(null);
+        const params = new URLSearchParams();
+        if (category) params.set('cat', category);
+        if (q.trim()) params.set('q', q.trim());
+        const url = `/api/resource-library${params.toString() ? `?${params.toString()}` : ''}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(`Failed to load resources (${res.status}): ${txt}`);
+        }
+        const json = (await res.json()) as ApiResponse;
+        if (isMounted) setItems(json.items || []);
       } catch (e: any) {
-        if (!mounted) return;
-        setApiError('Airtable API not configured. Showing example items.');
-        setItems(FALLBACK);
+        if (isMounted) setError(e?.message || 'Failed to load resources');
       } finally {
-        if (mounted) setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
     load();
-    // Re-fetch when tab changes (server filters per category)
-  }, [activeTab]);
-
-  /** Update the URL when tab changes from the UI */
-  function handleChangeTab(next: (typeof TABS)[number]['key']) {
-    setActiveTab(next);
-    const qs = new URLSearchParams(location.search);
-    if (next === 'all') {
-      qs.delete('cat');
-    } else {
-      qs.set('cat', next);
-    }
-    navigate({ search: qs.toString() ? `?${qs.toString()}` : '' }, { replace: false });
-  }
-
-  /** Filter by search query on the client */
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((r) => `${r.name} ${r.category}`.toLowerCase().includes(q));
-  }, [items, query]);
-
-  /** AppShell sticky header */
-  const header = (
-    <div className="mx-auto w-full max-w-[1280px] px-4 py-4">
-      <Breadcrumbs
-        items={[
-          { label: 'Dashboard', to: '/dashboard' },
-          { label: 'Resource Library' },
-        ]}
-      />
-      <div className="mt-2 text-2xl font-bold">Resource Library</div>
-      <div className="text-sm text-gray-600">
-        Explore patient handouts, clinical guidelines, and medical billing resources
-      </div>
-    </div>
-  );
+    return () => {
+      isMounted = false;
+    };
+  }, [category, q]);
 
   return (
-    <AppShell sidebar={<MemberSidebar />} header={header}>
-      {/* Tabs */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        {TABS.map((t) => (
-          <Button
-            key={t.key}
-            variant={activeTab === t.key ? undefined : 'outline'}
-            className={activeTab === t.key ? '' : 'bg-transparent'}
-            onClick={() => handleChangeTab(t.key)}
-            size="sm"
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <header className="mb-6">
+        <h1 className="text-3xl font-semibold text-slate-900">ClinicalRxQ Resource Library</h1>
+        <p className="text-slate-600 mt-2">All resources pulled live from Airtable.</p>
+      </header>
+
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
+        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 w-fit">
+          <button
+            type="button"
+            onClick={() => setCategory('')}
+            className={`px-3 py-1.5 rounded-md text-sm ${
+              category === '' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-50'
+            }`}
           >
-            {t.label}
-          </Button>
-        ))}
-      </div>
-
-      {/* Search */}
-      <div className="mb-4">
-        <Input
-          placeholder="Search by name, description, or type..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </div>
-
-      {/* API warning (if any) */}
-      {apiError ? (
-        <div className="mb-4 flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-[13px] text-amber-800">
-          <AlertCircle className="mt-0.5 h-4 w-4" />
-          <div>{apiError}</div>
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => setCategory('handouts')}
+            className={`px-3 py-1.5 rounded-md text-sm ${
+              category === 'handouts' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            Patient Handouts
+          </button>
+          <button
+            type="button"
+            onClick={() => setCategory('clinical')}
+            className={`px-3 py-1.5 rounded-md text-sm ${
+              category === 'clinical' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            Clinical Resources
+          </button>
+          <button
+            type="button"
+            onClick={() => setCategory('billing')}
+            className={`px-3 py-1.5 rounded-md text-sm ${
+              category === 'billing' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            Medical Billing
+          </button>
         </div>
-      ) : null}
 
-      <div className="mb-3 text-sm text-slate-600">
-        {loading ? 'Loading…' : `${filtered.length} result(s)`}
+        <div className="flex-1" />
+
+        <div className="w-full md:w-80">
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search by name, category..."
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+        </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((r) => (
-          <Card key={r.id} className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="text-base">{r.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              <div className="text-xs text-slate-500">Category: {r.category}</div>
-              <div>
-                {r.url ? (
-                  <a href={r.url} target="_blank" rel="noreferrer">
-                    <Button size="sm" variant="outline" className="bg-transparent">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                  </a>
-                ) : (
-                  <Button size="sm" variant="outline" className="bg-transparent" disabled>
-                    <Download className="mr-2 h-4 w-4" />
-                    No file
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </AppShell>
+      {/* Content */}
+      {loading ? (
+        <div>
+          <div className="h-4 w-48 bg-slate-200 rounded mb-4 animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-24 bg-slate-100 rounded animate-pulse" />
+            ))}
+          </div>
+        </div>
+      ) : error ? (
+        <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 p-4">
+          {error}
+        </div>
+      ) : (
+        <>
+          <div className="text-slate-600 mb-3">{items.length} result(s)</div>
+          {items.length === 0 ? (
+            <div className="text-slate-600">No resources found.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {items.map((item) => (
+                <ResourceCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }
