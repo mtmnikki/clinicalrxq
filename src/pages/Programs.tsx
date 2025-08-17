@@ -1,6 +1,7 @@
 /**
  * Programs Overview Page
  * Displays all clinical programs loaded from Airtable (no mock data).
+ * Replaces dynamic require with a safe icon map to avoid runtime errors in production.
  */
 
 import React, { useEffect, useState } from 'react'
@@ -9,9 +10,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { Link } from 'react-router'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, CalendarCheck, Pill, TestTube2, ActivitySquare, Stethoscope, Layers } from 'lucide-react'
 import { Api } from '../services/api'
 import { ClinicalProgram } from '../services/api/types'
+
+/**
+ * Map Airtable-provided icon names to Lucide components.
+ * Falls back to Layers for unknown names.
+ */
+function iconByName(name?: string) {
+  const n = (name || '').toLowerCase()
+  const map: Record<string, React.ComponentType<any>> = {
+    calendarcheck: CalendarCheck,
+    pill: Pill,
+    testtube2: TestTube2,
+    activitysquare: ActivitySquare,
+    stethoscope: Stethoscope,
+    layers: Layers,
+  }
+  return map[n] || Layers
+}
 
 /**
  * Programs Page Component (live Airtable)
@@ -62,7 +80,7 @@ const ProgramsPage: React.FC = () => {
         <div className="mx-auto max-w-[1200px] px-4">
           {loading ? (
             <div className="flex items-center justify-center py-10">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500/20 border-t-white" />
             </div>
           ) : programs.length === 0 ? (
             <div className="rounded-md border border-dashed p-6 text-center text-slate-700">
@@ -71,9 +89,12 @@ const ProgramsPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {programs.map((program) => {
-                const Icon = (require('lucide-react') as any)[program.icon] || (require('lucide-react') as any).Layers
+                const Icon = iconByName(program.icon)
                 return (
-                  <Card key={program.slug} className="group border-blue-50 hover:border-blue-200 hover:shadow-lg transition-all duration-300">
+                  <Card
+                    key={program.slug}
+                    className="group border-blue-50 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+                  >
                     <CardHeader className="pb-2">
                       <div className={`w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center mb-4`}>
                         <Icon className="h-8 w-8 text-white" />
