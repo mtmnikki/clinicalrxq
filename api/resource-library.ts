@@ -137,11 +137,10 @@ export default async function handler(
       ? results.filter((r) => `${r.name} ${r.category}`.toLowerCase().includes(qlc))
       : results;
 
-    // Optional caching for edge/CDN (adjust as desired)
-    // res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
-
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
+    // Public caching via Vercel Edge/CDN
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
     res.end(JSON.stringify({ items: filtered }));
   } catch (err: any) {
     // eslint-disable-next-line no-console
