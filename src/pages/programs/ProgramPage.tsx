@@ -2,7 +2,7 @@
  * Generic Program Page
  * Renders header and tabbed content for the given program slug, with the required tab set:
  * Overview, Training Modules, Protocol Manuals, Documentation Forms, Additional Resources.
- * - Now loads Program meta from Airtable (no mock data).
+ * - Loads Program meta and Documentation Forms from Airtable only (no mock or placeholder content).
  */
 
 import React, { useEffect, useMemo, useState } from 'react'
@@ -15,10 +15,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/ta
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/ui/accordion'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { ArrowRight, ChevronRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 /**
- * Program Page component (live Airtable)
+ * Program Page component (Airtable-only)
+ * - No mock data; if Airtable is missing or empty, shows a friendly empty state.
  */
 const ProgramPage: React.FC = () => {
   const params = useParams()
@@ -29,8 +30,8 @@ const ProgramPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [loadingMeta, setLoadingMeta] = useState(true)
 
+  /** Load program metadata from Airtable and pick matching slug */
   useEffect(() => {
-    // Load program metadata from Airtable and pick matching slug
     const loadMeta = async () => {
       setLoadingMeta(true)
       try {
@@ -47,8 +48,8 @@ const ProgramPage: React.FC = () => {
     loadMeta()
   }, [slug])
 
+  /** Load Documentation Forms for selected program (Airtable only) */
   useEffect(() => {
-    // Load Documentation Forms for selected program
     setLoading(true)
     Api.getProgramResources(slug)
       .then(setItems)
@@ -59,15 +60,27 @@ const ProgramPage: React.FC = () => {
       .finally(() => setLoading(false))
   }, [slug])
 
-  // MTMTFT special nested accordion structure (UI placeholder taxonomy – not mock records)
-  const mtmCategories: { title: string; count?: number; children: string[] }[] = [
-    { title: 'CMR Forms', count: 3, children: ['Authorization for Medication Review', 'Patient Intake Form', 'Pharmacist CMR Worksheet'] },
-    { title: 'Guides and Checklists', count: 5, children: ['Clinical Quick Pick Text', 'Folder Prep Quick Reference', 'CMR Overview', 'Pharmacist Form Explanations', 'Technician Form Explanations'] },
-    { title: 'Medical Condition Flowsheets', count: 12, children: ['Alzheimers', 'Asthma', 'COPD', 'Chronic Heart Failure', 'Chronic Kidney Disease', 'Depression', 'Diabetes', 'GERD', 'Hyperlipidemia', 'Hypertension', 'Hypothyroidism', 'Osteoporosis'] },
-    { title: 'Outcomes TIP Forms', count: 23, children: ['TIP A', 'TIP B', 'TIP C'] },
-    { title: 'Prescriber Communication Forms', count: 50, children: ['General Communication A', 'General Communication B'] },
-    { title: 'Training', count: 7, children: ['Module 1', 'Module 2', 'Module 3'] },
-  ]
+  /**
+   * Group resources by category (if present) to provide a clean, real-data accordion.
+   * - No hard-coded categories. Everything is from Airtable.
+   */
+  const grouped = useMemo(() => {
+    const map = new Map<string, ResourceItem[]>()
+    items.forEach((it) => {
+      const key = (it.category && it.category.trim()) || 'General'
+      const list = map.get(key) || []
+      list.push(it)
+      map.set(key, list)
+    })
+    // Sort categories and items alphabetically for easier scan
+    const sorted = Array.from(map.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, list]) => ({
+        key,
+        list: [...list].sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+    return sorted
+  }, [items])
 
   return (
     <AppShell
@@ -169,27 +182,72 @@ const ProgramPage: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Documentation Forms */}
+        {/* Documentation Forms (Airtable-only, grouped by category when available) */}
         <TabsContent value="documentation" className="mt-4" id="documentation">
-          {slug === 'mtmtft' ? (
+          {loading ? (
+            <div className="col-span-full flex items-center justify-center py-10">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-md border border-dashed p-6 text-slate-600">
+              No documentation forms available.
+            </div>
+          ) : grouped.length <= 1 ? (
+            // Single category or no categories: simple list
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              {items
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((it) => (
+                  <Card key={it.id}>
+                    <CardContent className="flex items-center justify-between p-4">
+                      <div>
+                        <div className="text-sm font-medium">{it.name}</div>
+                        <div className="text-xs text-slate-500">{(it.category || 'General').toString()}</div>
+                      </div>
+                      {it.fileUrl ? (
+                        <Button size="sm" variant="outline" className="bg-transparent" asChild>
+                          <a href={it.fileUrl} target="_blank" rel="noopener noreferrer">
+                            Download <ArrowRight className="ml-1 h-4 w-4" />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" className="bg-transparent" disabled>
+                          Download
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          ) : (
+            // Multiple categories: accordion grouped by real categories
             <Accordion type="multiple" className="w-full">
-              {mtmCategories.map((cat) => (
-                <AccordionItem key={cat.title} value={cat.title}>
+              {grouped.map((group) => (
+                <AccordionItem key={group.key} value={group.key}>
                   <AccordionTrigger>
                     <div className="flex w-full items-center justify-between">
-                      <span>{cat.title}</span>
-                      {cat.count ? <Badge variant="secondary">{cat.count}</Badge> : null}
+                      <span>{group.key}</span>
+                      <Badge variant="secondary">{group.list.length}</Badge>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-2">
-                      {cat.children.map((child) => (
-                        <Card key={child}>
+                      {group.list.map((it) => (
+                        <Card key={it.id}>
                           <CardContent className="flex items-center justify-between p-3">
-                            <div className="text-sm">{child}</div>
-                            <Button size="sm" variant="outline" className="bg-transparent">
-                              Download <ChevronRight className="ml-1 h-4 w-4" />
-                            </Button>
+                            <div className="text-sm">{it.name}</div>
+                            {it.fileUrl ? (
+                              <Button size="sm" variant="outline" className="bg-transparent" asChild>
+                                <a href={it.fileUrl} target="_blank" rel="noopener noreferrer">
+                                  Download <ArrowRight className="ml-1 h-4 w-4" />
+                                </a>
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="outline" className="bg-transparent" disabled>
+                                Download
+                              </Button>
+                            )}
                           </CardContent>
                         </Card>
                       ))}
@@ -198,32 +256,6 @@ const ProgramPage: React.FC = () => {
                 </AccordionItem>
               ))}
             </Accordion>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-              {loading ? (
-                <div className="col-span-full flex items-center justify-center py-10">
-                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-                </div>
-              ) : items.length ? (
-                items.map((it) => (
-                  <Card key={it.id}>
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div>
-                        <div className="text-sm font-medium">{it.name}</div>
-                        <div className="text-xs text-slate-500">{(it.program ?? '').toUpperCase()}</div>
-                      </div>
-                      <Button size="sm" variant="outline" className="bg-transparent">
-                        Download <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <div className="rounded-md border border-dashed p-6 text-slate-600">
-                  No documentation forms available.
-                </div>
-              )}
-            </div>
           )}
         </TabsContent>
 
