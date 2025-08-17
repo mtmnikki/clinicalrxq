@@ -1,16 +1,6 @@
-/**
- * Vercel Serverless Function: Resource Library
- * - GET /api/resource-library?cat=handouts|clinical|billing&q=...
- * - Aggregates across Airtable tables into a unified library:
- *   - PatientHandouts            -> category "handouts"
- *   - ClinicalGuidelines         -> category "clinical"
- *   - MedicalBillingResources    -> category "billing"
- *
- * Security:
- * - Reads AIRTABLE_API_KEY and AIRTABLE_BASE_ID from environment. Never expose to client.
- */
-
 import type { IncomingMessage, ServerResponse } from 'http';
+
+// Use require to avoid type issues; airtable CJS is supported on Vercel Node runtime.
 const Airtable = require('airtable');
 
 /** Minimal Airtable attachment */
