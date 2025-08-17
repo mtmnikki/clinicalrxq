@@ -59,7 +59,7 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Desktop Login Button */}
+          {/* Desktop Login + Join Buttons */}
           <div className="hidden md:flex items-center gap-3">
             <Link to="/login">
               <Button variant="outline" className="bg-transparent">
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
             </Link>
             <Link to="/join">
               <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-teal-400 shadow-xl">
-                Start Free Trial
+                Join Now
               </Button>
             </Link>
           </div>
@@ -119,7 +119,7 @@ const Header: React.FC = () => {
               </Link>
               <Link to="/join" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full bg-amber-500 hover:bg-amber-600 shadow-xl">
-                  Start Free Trial
+                  Join Now
                 </Button>
               </Link>
             </div>
