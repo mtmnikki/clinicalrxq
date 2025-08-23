@@ -34,11 +34,12 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 font-bold text-white">
-                CR
-              </div>
-              <span className="text-xl font-bold text-gray-900">ClinicalRxQ</span>
+            <Link to="/" className="flex items-center">
+              <img 
+                src="/images/WORDLOGOBLACK.svg" 
+                alt="ClinicalRxQ - Where Dispensing Meets Direct Patient Care" 
+                className="h-8" 
+              />
             </Link>
           </div>
 
