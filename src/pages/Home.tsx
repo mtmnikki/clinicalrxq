@@ -11,8 +11,6 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Link } from 'react-router'
-import BlackSloganLogo from '../assets/images/blacksloganlogo.svg'
-import FemalePharm1 from '../assets/images/femalepharm1.svg'
 import {
   // Icons used in replaced sections
   Play,
@@ -196,12 +194,10 @@ const HomePage: React.FC = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="mb-6 flex justify-center lg:justify-start">
-                <img 
-                  src={BlackSloganLogo} 
-                  alt="Where Dispensing Meets Direct Patient Care" 
-                  className="h-16 w-full max-w-md lg:max-w-lg" 
-                />
+              <div className="mb-6">
+                <Badge className="bg-gradient-to-r from-blue-600 to-teal-400 text-white border-0">
+                  Where Dispensing Meets Direct Patient Care
+                </Badge>
               </div>
               <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                 Transform Your{' '}
@@ -230,11 +226,14 @@ const HomePage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img
-                src={FemalePharm1}
-                alt="Female pharmacist providing patient care"
-                className="w-full h-auto max-w-lg mx-auto"
-              />
+              <div className="relative z-10">
+                <img
+                  src="https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/586a328a-c576-4a4b-ab52-e4c62129d105.png"
+                  alt="Pharmacist providing clinical care"
+                  className="rounded-2xl shadow-2xl"
+                />
+              </div>
+              <div className="absolute -top-4 -right-4 w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl opacity-20"></div>
             </div>
           </div>
         </div>
