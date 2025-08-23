@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Button } from '../ui/button'
 import { Menu, X, LogIn } from 'lucide-react'
+import WordLogoBlack from '../../assets/images/blackwordlogo.svg'
 
 /**
  * Header component
@@ -34,11 +35,12 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 font-bold text-white">
-                CR
-              </div>
-              <span className="text-xl font-bold text-gray-900">ClinicalRxQ</span>
+            <Link to="/" className="flex items-center">
+              <img 
+                src={WordLogoBlack} 
+                alt="ClinicalRxQ - Where Dispensing Meets Direct Patient Care" 
+                className="h-8" 
+              />
             </Link>
           </div>
 
