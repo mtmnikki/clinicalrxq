@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Button } from '../ui/button'
 import { Menu, X, LogIn } from 'lucide-react'
+import WordLogoBlack from '../../assets/images/blackwordlogo.svg'
 
 /**
  * Header component
@@ -36,7 +37,7 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <img 
-                src="/images/WORDLOGOBLACK.svg" 
+                src={WordLogoBlack} 
                 alt="ClinicalRxQ - Where Dispensing Meets Direct Patient Care" 
                 className="h-8" 
               />
