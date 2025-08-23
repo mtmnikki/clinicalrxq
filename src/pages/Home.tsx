@@ -11,6 +11,9 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Link } from 'react-router'
+import BlackSloganLogo from '../assets/images/blacksloganlogo.svg'
+import FemalePharm1 from '../assets/images/femalepharm1.svg'
+import FemalePharmShow from '../assets/images/femalepharmshow.svg'
 import {
   // Icons used in replaced sections
   Play,
@@ -194,10 +197,12 @@ const HomePage: React.FC = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="mb-6">
-                <Badge className="bg-gradient-to-r from-blue-600 to-teal-400 text-white border-0">
-                  Where Dispensing Meets Direct Patient Care
-                </Badge>
+              <div className="mb-6 flex xl:justify-start">
+                <img 
+                  src={BlackSloganLogo} 
+                  alt="Where Dispensing Meets Direct Patient Care" 
+                  className="w-full" 
+                />
               </div>
               <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                 Transform Your{' '}
@@ -226,14 +231,11 @@ const HomePage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <div className="relative z-10">
-                <img
-                  src="https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/586a328a-c576-4a4b-ab52-e4c62129d105.png"
-                  alt="Pharmacist providing clinical care"
-                  className="rounded-2xl shadow-2xl"
-                />
-              </div>
-              <div className="absolute -top-4 -right-4 w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl opacity-20"></div>
+              <img
+                src={FemalePharm1}
+                alt="Female pharmacist providing patient care"
+                className="w-full h-auto max-w-lg mx-auto"
+              />
             </div>
           </div>
         </div>
@@ -372,8 +374,18 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {programs.map((program, index) => (
+            {programs.slice(0, 3).map((program, index) => (
               <ProgramCard key={index} item={program} />
+            ))}
+            <div className="flex items-center justify-center">
+              <img 
+                src={FemalePharmShow} 
+                alt="Female Pharmacist" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            {programs.slice(3).map((program, index) => (
+              <ProgramCard key={index + 3} item={program} />
             ))}
           </div>
 
@@ -443,12 +455,12 @@ const HomePage: React.FC = () => {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-300 flex items-center justify-center">
                     <TrendingUp className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg">Proven Financial Models</CardTitle>
+                  <CardTitle className="text-lg">Empowering Team-Based Workflow</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Each service includes detailed billing protocols and proven revenue models. TimeMyMeds alone generates $75,000 per 100 patients enrolled.
+                  Empowering pharmacy technicians through team-based protocols. Our workflows implement real-world solutions that enhance efficiency and patient care.
                 </p>
               </CardContent>
             </Card>
@@ -488,7 +500,7 @@ const HomePage: React.FC = () => {
             <Card className="text-center">
               <CardContent className="p-6">
                 <Lightbulb className="h-12 w-12 text-cyan-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Licensed Pharmacists</h3>
+                <h3 className="font-semibold mb-2">Community Pharmacists</h3>
                 <p className="text-gray-600 text-sm">
                   Community-based practitioners ready to expand their clinical services
                   and practice at the top of their license
@@ -499,7 +511,7 @@ const HomePage: React.FC = () => {
             <Card className="text-center">
               <CardContent className="p-6">
                 <UsersIcon className="h-12 w-12 text-cyan-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Certified Pharmacy Technicians</h3>
+                <h3 className="font-semibold mb-2">Pharmacy Technicians</h3>
                 <p className="text-gray-600 text-sm">
                   Essential team members who multiply pharmacist effectiveness through
                   operational excellence
@@ -510,7 +522,7 @@ const HomePage: React.FC = () => {
             <Card className="text-center">
               <CardContent className="p-6">
                 <Heart className="h-12 w-12 text-cyan-500 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">All Practice Settings</h3>
+                <h3 className="font-semibold mb-2">Community Pharmacy Settings</h3>
                 <p className="text-gray-600 text-sm">
                   From independent single-store pharmacies to large multi-site enterprises
                   seeking transformation
