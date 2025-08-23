@@ -11,6 +11,7 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Link } from 'react-router'
+import BlackSloganLogo from '../assets/images/blacksloganlogo.svg'
 import {
   // Icons used in replaced sections
   Play,
@@ -190,24 +191,24 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-300 via-cyan-200 to-teal-200 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('https://pub-cdn.sider.ai/u/U03VH4NVNOE/web-coder/687655a5b1dac45b18db4f5c/resource/cd53336d-d6e2-4c6b-bf62-bba9d1f359ba.png')] bg-center bg-cover opacity-20"></div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="mb-6">
-                <Badge className="bg-gradient-to-r from-blue-600 to-teal-400 text-white border-0">
-                  Where Dispensing Meets Direct Patient Care
-                </Badge>
-              </div>
-              <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-                Transform Your{' '}
-                <span className="bg-gradient-to-r from-blue-600 via-cyan-400 to-teal-300 bg-clip-text text-transparent">
-                  Pharmacy Practice
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                The complete ecosystem for community pharmacy teams to deliver profitable, patient-centered
-                clinical services with proven protocols and turnkey infrastructure.
-              </p>
+<div>
+  <div className="mb-6 flex justify-center lg:justify-start">
+    <img 
+      src={BlackSloganLogo} 
+      alt="Where Dispensing Meets Direct Patient Care" 
+      className="h-12 max-w-full" 
+    />
+  </div>
+  <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+    Transform Your{' '}
+    <span className="bg-gradient-to-r from-blue-600 via-cyan-400 to-teal-300 bg-clip-text text-transparent">
+      Pharmacy Practice
+    </span>
+  </h1>
+  <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+    The complete ecosystem for community pharmacy teams to deliver profitable, patient-centered
+    clinical services with proven protocols and turnkey infrastructure.
+  </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link to="/programs">
                   <Button
