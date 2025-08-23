@@ -169,7 +169,7 @@ const HomePage: React.FC = () => {
       features: ['Quality Metrics', 'Provider Communication', 'Value-Based Care']
     },
     {
-      title: 'Pharmacist-Initiated Oral Contraceptives',
+      title: 'Oral Contraceptives',
       description:
         'From patient intake to medical billing, our protocols are here for your team and patients',
       icon: Heart,
