@@ -315,24 +315,29 @@ export function DashboardPage() {
 		
 			{/* Announcement Modal */}
 			<Dialog open={isAnnouncementModalOpen} onOpenChange={setIsAnnouncementModalOpen}>
-				<DialogContent className="backdrop-blur-sm bg-white/75 border border-white/80 max-w-3xl max-h-[80vh] overflow-y-auto">
-					{selectedAnnouncement && (
-						<>
-							<DialogHeader className="border-b border-gray-200 pb-4 mb-6">
-								<div className="flex items-center gap-2 mb-2">
-									<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-300 flex items-center justify-center">
-										<Bell className="text-white" size={16} />
-									</div>
-									<span className="text-sm text-gray-500">
-										{formatDate(selectedAnnouncement.created_at)}
-									</span>
-								</div>
-								<DialogTitle className="text-2xl font-bold text-gray-900 leading-tight">
-									{selectedAnnouncement.title}
-								</DialogTitle>
-							</DialogHeader>
-							<div 
-								className="prose prose-blue max-w-none text-gray-700 leading-relaxed"
+                <DialogContent className="
+                    max-w-3xl max-h-[80vh] overflow-y-auto rounded-xl
+                    bg-white/20 backdrop-blur-lg 
+                    border border-white/30 
+                    shadow-xl
+                ">
+                    {selectedAnnouncement && (
+                        <>
+                            <DialogHeader className="border-b border-white/30 pb-4 mb-6">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-300 flex items-center justify-center">
+                                        <Bell className="text-white" size={16} />
+                                    </div>
+                                    <span className="text-sm text-white">
+                                        {formatDate(selectedAnnouncement.created_at)}
+                                    </span>
+                                </div>
+                                <DialogTitle className="text-2xl font-bold text-white leading-tight">
+                                    {selectedAnnouncement.title}
+                                </DialogTitle>
+                            </DialogHeader>
+                            <div 
+                                className="prose prose-invert max-w-none text-white leading-relaxed"
 								dangerouslySetInnerHTML={{ 
 									__html: marked(selectedAnnouncement.body) 
 								}}
