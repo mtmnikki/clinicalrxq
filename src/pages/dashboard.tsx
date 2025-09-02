@@ -315,7 +315,7 @@ export function DashboardPage() {
 		
 			{/* Announcement Modal */}
 			<Dialog open={isAnnouncementModalOpen} onOpenChange={setIsAnnouncementModalOpen}>
-				<DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+				<DialogContent className="backdrop-blur-lg bg-white/50 border border-white/80max-w-3xl max-h-[80vh] overflow-y-auto">
 					{selectedAnnouncement && (
 						<>
 							<DialogHeader className="border-b border-gray-200 pb-4 mb-6">

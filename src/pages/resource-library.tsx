@@ -19,42 +19,42 @@ const quickFilterCards = [
 		title: 'Patient Handouts',
 		icon: Users,
 		filter: { resource_type: 'patient_handout' },
-		color: 'bg-gradient-br from-blue-200 to-blue-400 text-blue-600'
+		color: 'bg-gradient-to-br from-blue-200 to-blue-400 text-blue-600'
 	},
 	{
 		id: 'clinical_guideline',
 		title: 'Clinical Guidelines',
 		icon: BookOpen,
 		filter: { resource_type: 'clinical_guideline' },
-		color: 'bg-gradient-br from-cyan-100 to-cyan-400 text-cyan-600'
+		color: 'bg-gradient-to-br from-cyan-100 to-cyan-400 text-cyan-600'
 	},
 	{
 		id: 'medical_billing',
 		title: 'Medical Billing',
 		icon: CreditCard,
 		filter: { resource_type: 'medical_billing' },
-		color: 'bg-gradient-br from-teal-100 to-teal-400 text-teal-600'
+		color: 'bg-gradient-to-br from-teal-100 to-teal-400 text-teal-600'
 	},
 	{
 		id: 'documentation_form',
 		title: 'Documentation Forms',
 		icon: ClipboardList,
 		filter: { resource_type: 'documentation_form' },
-		color: 'bg-gradient-br from-green-100 to-green-400 text-green-600'
+		color: 'bg-gradient-to-br from-green-100 to-green-400 text-green-600'
 	},
 	{
 		id: 'videos',
 		title: 'Videos',
 		icon: Play,
 		filter: { mime_type: 'video/mp4' },
-		color: 'bg-gradient-br from-emerald-100 to-emerald-400 text-emerald-600'
+		color: 'bg-gradient-to-br from-emerald-100 to-emerald-400 text-emerald-600'
 	},
 	{
 		id: 'all',
 		title: 'All Resources',
 		icon: Grid3X3,
 		filter: {},
-		color: 'bg-gradient-br from-blue-600 via-cyan-400 to-teal-300 text-white'
+		color: 'bg-gradient-to-br from-blue-600 via-cyan-400 to-teal-300 text-white'
 	}
 ]
 
