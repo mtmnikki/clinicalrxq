@@ -122,7 +122,7 @@ export function DashboardPage() {
 							<>
 								<div className="flex items-center justify-between mb-6">
 									<h2 className="text-2xl font-bold text-gray-900">Recent Bookmarks</h2>
-									<Button variant="outline" size="sm">
+									<Button variant="outline" size="sm" onClick={openPanel}>
 										View All Bookmarks
 									</Button>
 								</div>
@@ -133,10 +133,16 @@ export function DashboardPage() {
 														bookmark.file_name?.toLowerCase().includes('.webm') ||
 														bookmark.file_name?.toLowerCase().includes('.mov')
 
+										const handleCardClick = () => {
+											if (bookmark.file_url) {
+												window.open(bookmark.file_url, '_blank')
+											}
+										}
+
 										return (
-											<Card key={bookmark.id} className="hover:shadow-lg transition-shadow group">
-												<CardContent className="p-4">
-													<div className="flex items-center gap-3 mb-2">
+											<Card key={bookmark.id} className="hover:shadow-lg transition-shadow group cursor-pointer" onClick={handleCardClick}>
+												<CardContent className="p-3">
+													<div className="flex items-center justify-between gap-3">
 														{isVideo ? (
 															<Play className="text-purple-600 flex-shrink-0" size={18} />
 														) : (
@@ -145,14 +151,7 @@ export function DashboardPage() {
 														<h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-blue-600 transition-colors">
 															{bookmark.file_name || 'Untitled Resource'}
 														</h3>
-													</div>
-													<div className="flex items-center justify-between">
-														<p className="text-xs text-gray-500">
-															Saved {new Date(bookmark.created_at).toLocaleDateString()}
-														</p>
-														<div className="flex items-center gap-1">
-															<BookmarkCheck className="text-blue-600" size={14} />
-														</div>
+														<BookmarkCheck className="text-blue-600 flex-shrink-0" size={14} />
 													</div>
 												</CardContent>
 											</Card>
