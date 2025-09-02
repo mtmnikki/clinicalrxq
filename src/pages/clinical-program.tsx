@@ -279,7 +279,7 @@ export function ClinicalProgramPage() {
 																		</span>
 																	</div>
 																	<div className="flex items-center gap-2">
-																		<BookmarkButton fileId={form.id} size="sm" />
+																		<BookmarkButton fileId={form.file_id} size="sm" />
 																		<Button size="sm" className="flex-shrink-0">
 																			<Download className="mr-2" size={16} />
 																			Download
