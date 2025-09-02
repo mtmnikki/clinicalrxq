@@ -419,7 +419,7 @@ export function ClinicalProgramPage() {
 			{/* Hero Section */}
 			<section className={`bg-gradient-to-br ${program.hero_gradient || 'from-blue-600 via-cyan-400 to-teal-300'} py-16`}>
 				<div className="max-w-7xl mx-auto px-6">
-					<div className="backdrop-blur-sm bg-white/10 rounded-2xl p-12 border border-white/20 text-left">
+					<div className="backdrop-blur-sm bg-white/20 rounded-2xl p-12 border border-white/30 text-left">
 						<h1 className="text-4xl font-bold text-white mb-4">
 							{program.name}
 						</h1>

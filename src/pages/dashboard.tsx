@@ -164,7 +164,7 @@ export function DashboardPage() {
 						</CardHeader>
 						<CardContent>
 							<Link to="/resources">
-								<Button className="bg-white text-blue-600 hover:bg-gradient-to-br from-teal-500 via-cyan-400 to-blue-300">
+								<Button className="bg-white text-blue-600 hover:bg-cyan-300">
 									Browse Resources
 									<ArrowRight className="ml-2" size={16} />
 								</Button>
