@@ -1,0 +1,7 @@
+# Vercel deployment ignore list
+# See https://vercel.com/docs/project-configuration#project-configuration/vercel-ignore
+.git
+.github
+node_modules
+.env*.local
+README.md
