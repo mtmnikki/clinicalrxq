@@ -19,42 +19,42 @@ const quickFilterCards = [
 		title: 'Patient Handouts',
 		icon: Users,
 		filter: { resource_type: 'patient_handout' },
-		color: 'bg-blue-100 text-blue-600'
+		color: 'bg-gradient-br from-blue-200 to-blue-400 text-blue-600'
 	},
 	{
 		id: 'clinical_guideline',
 		title: 'Clinical Guidelines',
 		icon: BookOpen,
 		filter: { resource_type: 'clinical_guideline' },
-		color: 'bg-cyan-100 text-cyan-600'
+		color: 'bg-gradient-br from-cyan-100 to-cyan-400 text-cyan-600'
 	},
 	{
 		id: 'medical_billing',
 		title: 'Medical Billing',
 		icon: CreditCard,
 		filter: { resource_type: 'medical_billing' },
-		color: 'bg-teal-100 text-teal-600'
+		color: 'bg-gradient-br from-teal-100 to-teal-400 text-teal-600'
 	},
 	{
 		id: 'documentation_form',
 		title: 'Documentation Forms',
 		icon: ClipboardList,
 		filter: { resource_type: 'documentation_form' },
-		color: 'bg-green-100 text-green-600'
+		color: 'bg-gradient-br from-green-100 to-green-400 text-green-600'
 	},
 	{
 		id: 'videos',
 		title: 'Videos',
 		icon: Play,
 		filter: { mime_type: 'video/mp4' },
-		color: 'bg-purple-100 text-purple-600'
+		color: 'bg-gradient-br from-emerald-100 to-emerald-400 text-emerald-600'
 	},
 	{
 		id: 'all',
 		title: 'All Resources',
 		icon: Grid3X3,
 		filter: {},
-		color: 'bg-gray-100 text-gray-600'
+		color: 'bg-gradient-br from-blue-600 via-cyan-400 to-teal-300 text-white'
 	}
 ]
 
@@ -346,7 +346,7 @@ export function ResourceLibraryPage() {
 								<Card
 									key={card.id}
 									className={`cursor-pointer transition-all hover:shadow-lg ${
-										isSelected ? 'ring-2 ring-blue-500 shadow-lg' : ''
+										isSelected ? 'ring-2 ring-teal-300 shadow-lg' : ''
 									}`}
 									onClick={() => handleQuickFilterClick(card.id)}
 								>
@@ -432,7 +432,7 @@ export function ResourceLibraryPage() {
 										<div className="flex items-center gap-3 flex-1 min-w-0">
 											<div className="flex-shrink-0">
 												{resource.mime_type === 'video/mp4' ? (
-													<Play className="text-purple-600" size={20} />
+													<Play className="text-teal-400" size={20} />
 												) : (
 													<FileText className="text-blue-600" size={20} />
 												)}

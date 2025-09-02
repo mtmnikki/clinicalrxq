@@ -91,11 +91,11 @@ export function DashboardPage() {
 										<CardContent className="p-4">
 											<div className="flex items-center gap-3 mb-2">
 												{isVideo ? (
-													<Play className="text-purple-600 flex-shrink-0" size={18} />
+													<Play className="text-teal-400 flex-shrink-0" size={18} />
 												) : (
 													<FileText className="text-blue-600 flex-shrink-0" size={18} />
 												)}
-												<h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-blue-600 transition-colors">
+												<h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-cyan-600 transition-colors">
 													{bookmark.file_name || 'Untitled Resource'}
 												</h3>
 											</div>
@@ -128,7 +128,7 @@ export function DashboardPage() {
 						{programs.length > 0 ? programs.map((program) => (
 							<Card key={program.id} className="hover:shadow-lg transition-shadow group">
 								<CardHeader>
-									<CardTitle className="group-hover:text-blue-600 transition-colors">
+									<CardTitle className="group-hover:text-cyan-600 transition-colors">
 										{program.name}
 									</CardTitle>
 									<CardDescription>
@@ -138,7 +138,7 @@ export function DashboardPage() {
 								<CardContent>
 									<Link to={`/programs/${program.slug}`}>
 										<Button className="w-full group">
-											Start Training
+											View Program
 											<ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
 										</Button>
 									</Link>
@@ -164,7 +164,7 @@ export function DashboardPage() {
 						</CardHeader>
 						<CardContent>
 							<Link to="/resources">
-								<Button className="bg-white text-blue-600 hover:bg-gray-50">
+								<Button className="bg-white text-blue-600 hover:bg-gradient-to-br from-teal-500 via-cyan-400 to-blue-300 text-white">
 									Browse Resources
 									<ArrowRight className="ml-2" size={16} />
 								</Button>
