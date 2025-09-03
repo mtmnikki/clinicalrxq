@@ -181,17 +181,19 @@ export function ResourceLibraryPage() {
 		}
 	}
 
-	const filterResources = () => {
-		let filtered = resources
+const filterResources = () => {
+    let filtered = resources
 
-		// Apply search term filter
-		if (searchTerm) {
-			filtered = filtered.filter(resource =>
-				resource.file_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				resource.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-			)
-		}
+    // Apply search term filter
+    if (searchTerm) {
+        filtered = filtered.filter(resource =>
+            (resource.file_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (resource.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (Array.isArray(resource.tags) ? resource.tags : []).some(tag =>
+                (tag || '').toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        )
+    }
 
 		// Apply quick filter
 		if (selectedQuickFilter) {
