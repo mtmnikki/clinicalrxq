@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog'
 import { Button } from '../components/ui/button'
-import { BookOpen, Library, Clock, ArrowRight, TrendingUp, FileText, Play, BookmarkCheck, Bell } from 'lucide-react'
+import { BookOpen, ArrowRight, FileText, Play, BookmarkCheck, Bell } from 'lucide-react'
 import { supabase, Program, Announcement } from '../lib/supabase'
 import { useAuth } from '../contexts/auth-context'
 import { useBookmark } from '../contexts/bookmark-context'
@@ -16,9 +16,11 @@ type ClinicalProgram = Program
 export function DashboardPage() {
 	const [programs, setPrograms] = useState<ClinicalProgram[]>([])
 	const [announcements, setAnnouncements] = useState<Announcement[]>([])
-	const [recentResources, setRecentResources] = useState([])
+	// const [recentResources, setRecentResources] = useState([])
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null)
 	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { user } = useAuth()
 	const { bookmarks } = useBookmark()
 	const { activeProfile } = useProfile()
@@ -27,7 +29,7 @@ export function DashboardPage() {
 	useEffect(() => {
 		fetchPrograms()
 		fetchAnnouncements()
-		fetchRecentResources()
+		// fetchRecentResources()
 	}, [])
 
 	const fetchPrograms = async () => {
@@ -68,7 +70,7 @@ export function DashboardPage() {
 				.limit(3)
 
 			if (error) throw error
-			setRecentResources(data || [])
+			// setRecentResources(data || [])
 		} catch (error) {
 			console.error('Error fetching recent resources:', error)
 		}
