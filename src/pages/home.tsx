@@ -23,7 +23,6 @@ import {
 	Users,
 	Clock,
 	CheckCircle,
-	ArrowRight,
 	Target,
 	Zap,
 	Shield,
@@ -95,12 +94,13 @@ export function HomePage() {
 	/**
 	 * Active feature card index for subtle selected styling in the Advantage section
 	 */
-	const [activeFeature, setActiveFeature] = useState(0)
+	// const [activeFeature, setActiveFeature] = useState(0)
 
 	/**
 	 * Feature list for "The ClinicalRxQ Advantage" section
 	 * Matches exactly the provided content (3 items).
 	 */
+	/*
 	const features = [
 		{
 			title: 'Operational Flywheel',
@@ -124,6 +124,7 @@ export function HomePage() {
 			color: 'from-cyan-400 to-blue-700'
 		}
 	]
+	*/
 
 	/**
 	 * Programs displayed in the homepage programs section

@@ -96,7 +96,7 @@ export function ProfileModal({ isOpen, onClose, profile, mode }: ProfileModalPro
 			} else {
 				onClose()
 			}
-		} catch (err) {
+		} catch {
 			setError('An unexpected error occurred')
 		}
 	}
