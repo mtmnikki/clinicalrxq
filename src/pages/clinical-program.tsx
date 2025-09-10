@@ -4,8 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../components/ui/collapsible'
 import { Button } from '../components/ui/button'
-import { Download, FileText, BookOpen, ChevronDown, ChevronRight } from 'lucide-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { Download, FileText, BookOpen, ChevronDown, ChevronRight, Play, Library, ArrowLeft, ArrowRight } from 'lucide-react'
 import { BookmarkButton } from '../components/bookmark-button'
 import { supabase, Program, StorageFile, TrainingResourcesView } from '../lib/supabase'
 import { cn } from '../lib/utils'
@@ -61,7 +60,7 @@ export function ClinicalProgramPage() {
 			const { data: programData, error: programError } = await supabase
 				.from('programs')
 				.select('*')
-				.eq('slug', slug)
+				.eq('slug', slug!)
 
 			if (programError) throw programError
 
@@ -230,11 +229,11 @@ export function ClinicalProgramPage() {
 		return grouped
 	}
 
-const renderFormsWithAccordion = (forms: StorageFile[]) => {
-	const groupedForms = groupFormsByCategory(forms)
-	const sortedCategories = Object.keys(groupedForms).sort()
-	
-	return (
+	const renderFormsWithAccordion = (forms: StorageFile[]) => {
+		const groupedForms = groupFormsByCategory(forms)
+		const sortedCategories = Object.keys(groupedForms).sort()
+		
+		return (
 		<div className="space-y-4">
 			{sortedCategories.map(category => {
 				const subcategories = groupedForms[category]
@@ -271,7 +270,7 @@ const renderFormsWithAccordion = (forms: StorageFile[]) => {
 												return (
 													<div key={subcategory} className="space-y-2">
 														{subcategoryForms.map(form => (
-															<div key={form.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+															<div key={form.file_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
 																<div className="flex items-center gap-3">
 																	<FileText className="text-blue-600 flex-shrink-0" size={20} />
 																	<span className="font-medium text-gray-900 text-sm">
@@ -315,7 +314,7 @@ const renderFormsWithAccordion = (forms: StorageFile[]) => {
 															<CardContent className="pt-0">
 																<div className="space-y-2">
 																	{subcategoryForms.map(form => (
-																		<div key={form.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+																		<div key={form.file_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
 																			<div className="flex items-center gap-3">
 																				<FileText className="text-blue-600 flex-shrink-0" size={20} />
 																				<span className="font-medium text-gray-900 text-sm">
@@ -349,6 +348,260 @@ const renderFormsWithAccordion = (forms: StorageFile[]) => {
 					</Card>
 				)
 			})}
+		</div>
+	)
+}
+
+	if (loading) {
+		return <div className="p-6">Loading...</div>
+	}
+
+	if (!program) {
+		return <div className="p-6">Program not found</div>
+	}
+
+	return (
+		<div className="p-6">
+			<div className="max-w-7xl mx-auto">
+				<div className="mb-8">
+					<h1 className="text-3xl font-bold text-gray-900 mb-2">
+						{program.name}
+					</h1>
+					{program.description && (
+						<p className="text-gray-600">
+							{program.description}
+						</p>
+					)}
+				</div>
+
+				<Tabs defaultValue="overview" className="space-y-6">
+					<TabsList className="grid w-full grid-cols-5">
+						{tabs.map((tab) => (
+							<TabsTrigger key={tab.id} value={tab.id}>
+								{tab.label}
+							</TabsTrigger>
+						))}
+					</TabsList>
+
+					<TabsContent value="overview" className="space-y-6">
+						<Card>
+							<CardHeader>
+								<CardTitle>Program Overview</CardTitle>
+								<CardDescription>
+									Welcome to {program.name}. This section provides an overview of the program.
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<p className="text-gray-700">
+									{program.description || 'Comprehensive clinical training program designed to enhance your skills and knowledge.'}
+								</p>
+							</CardContent>
+						</Card>
+					</TabsContent>
+
+					<TabsContent value="training" className="space-y-6">
+						{trainingResources.length > 0 ? (
+							<div className="grid lg:grid-cols-3 gap-6">
+								{/* Video Player */}
+								<div className="lg:col-span-2">
+									<Card>
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<Play className="h-5 w-5" />
+												{currentVideo?.title || 'Training Video'}
+											</CardTitle>
+										</CardHeader>
+										<CardContent>
+											{currentVideo?.file_url ? (
+												<div className="space-y-4">
+													<video
+														ref={videoRef}
+														controls
+														className="w-full rounded-lg"
+														onEnded={handleVideoEnd}
+													>
+														<source src={currentVideo.file_url} type="video/mp4" />
+														Your browser does not support the video tag.
+													</video>
+													<div className="flex items-center justify-between">
+														<div className="text-sm text-gray-600">
+															Video {getCurrentVideoIndex() + 1} of {trainingResources.length}
+														</div>
+														<div className="flex gap-2">
+															<Button
+																onClick={handlePrevious}
+																disabled={getCurrentVideoIndex() === 0}
+																size="sm"
+																variant="outline"
+															>
+																<ArrowLeft className="h-4 w-4 mr-1" />
+																Previous
+															</Button>
+															<Button
+																onClick={handleNext}
+																disabled={getCurrentVideoIndex() === trainingResources.length - 1}
+																size="sm"
+																variant="outline"
+															>
+																Next
+																<ArrowRight className="h-4 w-4 ml-1" />
+															</Button>
+														</div>
+													</div>
+												</div>
+											) : (
+												<p className="text-gray-500">No video available</p>
+											)}
+										</CardContent>
+									</Card>
+								</div>
+
+								{/* Video List */}
+								<div>
+									<Card>
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<BookOpen className="h-5 w-5" />
+												Training Modules
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="p-0">
+											<div className="space-y-1">
+												{trainingResources.map((video, index) => (
+													<button
+														key={video.id}
+														onClick={() => handleVideoSelect(video)}
+														className={cn(
+															"w-full text-left p-3 hover:bg-gray-50 transition-colors border-b last:border-b-0",
+															currentVideo?.id === video.id && "bg-blue-50 border-l-4 border-l-blue-500"
+														)}
+													>
+														<div className="flex items-center gap-3">
+															<div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+																<span className="text-sm font-medium text-blue-600">
+																	{index + 1}
+																</span>
+															</div>
+															<div className="flex-1 min-w-0">
+																<p className="font-medium text-gray-900 truncate">
+																	{video.title}
+																</p>
+																{video.description && (
+																	<p className="text-sm text-gray-500 truncate">
+																		{video.description}
+																	</p>
+																)}
+															</div>
+														</div>
+													</button>
+												))}
+											</div>
+										</CardContent>
+									</Card>
+								</div>
+							</div>
+						) : (
+							<Card>
+								<CardContent className="text-center py-12">
+									<BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+									<h3 className="text-lg font-medium text-gray-900 mb-2">No Training Resources Available</h3>
+									<p className="text-gray-500">Training materials will be available soon.</p>
+								</CardContent>
+							</Card>
+						)}
+					</TabsContent>
+
+					<TabsContent value="protocols" className="space-y-6">
+						{protocols.length > 0 ? (
+							<div className="grid gap-4">
+								{protocols.map((protocol) => (
+									<Card key={protocol.file_id}>
+										<CardContent className="p-4">
+											<div className="flex items-center justify-between">
+												<div className="flex items-center gap-3">
+													<FileText className="text-blue-600 flex-shrink-0" size={24} />
+													<div>
+														<h3 className="font-medium text-gray-900">{protocol.file_name}</h3>
+													</div>
+												</div>
+												<div className="flex items-center gap-2">
+													<BookmarkButton fileId={protocol.file_id} />
+													<Button 
+														onClick={() => window.open(protocol.file_url, '_blank')}
+													>
+														<Download className="mr-2" size={16} />
+														Download
+													</Button>
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+								))}
+							</div>
+						) : (
+							<Card>
+								<CardContent className="text-center py-12">
+									<FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+									<h3 className="text-lg font-medium text-gray-900 mb-2">No Protocols Available</h3>
+									<p className="text-gray-500">Protocol documents will be available soon.</p>
+								</CardContent>
+							</Card>
+						)}
+					</TabsContent>
+
+					<TabsContent value="forms" className="space-y-6">
+						{forms.length > 0 ? (
+							renderFormsWithAccordion(forms)
+						) : (
+							<Card>
+								<CardContent className="text-center py-12">
+									<FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+									<h3 className="text-lg font-medium text-gray-900 mb-2">No Forms Available</h3>
+									<p className="text-gray-500">Forms will be available soon.</p>
+								</CardContent>
+							</Card>
+						)}
+					</TabsContent>
+
+					<TabsContent value="additional-resources" className="space-y-6">
+						{additionalResources.length > 0 ? (
+							<div className="grid gap-4">
+								{additionalResources.map((resource) => (
+									<Card key={resource.file_id}>
+										<CardContent className="p-4">
+											<div className="flex items-center justify-between">
+												<div className="flex items-center gap-3">
+													<Library className="text-green-600 flex-shrink-0" size={24} />
+													<div>
+														<h3 className="font-medium text-gray-900">{resource.file_name}</h3>
+													</div>
+												</div>
+												<div className="flex items-center gap-2">
+													<BookmarkButton fileId={resource.file_id} />
+													<Button 
+														onClick={() => window.open(resource.file_url, '_blank')}
+													>
+														<Download className="mr-2" size={16} />
+														Download
+													</Button>
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+								))}
+							</div>
+						) : (
+							<Card>
+								<CardContent className="text-center py-12">
+									<Library className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+									<h3 className="text-lg font-medium text-gray-900 mb-2">No Additional Resources Available</h3>
+									<p className="text-gray-500">Additional resources will be available soon.</p>
+								</CardContent>
+							</Card>
+						)}
+					</TabsContent>
+				</Tabs>
+			</div>
 		</div>
 	)
 }
