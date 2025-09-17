@@ -104,15 +104,16 @@ const filterGroups = [
 		title: 'Form Category',
 		field: 'form_category',
 		options: [
-			{ label: 'Patient Intake', value: 'intake' },
-			{ label: 'Consent', value: 'consent' },
-			{ label: 'Assessment', value: 'assessment' },
-			{ label: 'Care Note', value: 'care_plan' },
+			{ label: 'Patient Intake', value: 'patient_intake' },
+			{ label: 'Consent', value: 'patient_consent' },
+			{ label: 'Assessment', value: 'pharmacist_assessment' },
+			{ label: 'Care Note', value: 'pharmacist_care_plan' },
 			{ label: 'Referral', value: 'referral' },
 			{ label: 'Billing', value: 'billing' },
 			{ label: 'Prescriber Communication', value: 'prescriber_communication' },
 			{ label: 'Outcomes TIP', value: 'outcomes_tips' },
 			{ label: 'Medical Condition Flowsheet', value: 'medical_conditions_flowsheets' },
+			{ label: 'Referral', value: 'referral' }
 			{ label: 'Tracking', value: 'tracking' }
 		]
 	}
