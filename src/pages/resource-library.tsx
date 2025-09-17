@@ -113,7 +113,7 @@ const filterGroups = [
 			{ label: 'Prescriber Communication', value: 'prescriber_communication' },
 			{ label: 'Outcomes TIP', value: 'outcomes_tips' },
 			{ label: 'Medical Condition Flowsheet', value: 'medical_conditions_flowsheets' },
-			{ label: 'Referral', value: 'referral' }
+			{ label: 'Referral', value: 'referral' },
 			{ label: 'Tracking', value: 'tracking' }
 		]
 	}
