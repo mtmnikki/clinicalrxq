@@ -39,7 +39,16 @@ export function ClinicalProgramPage() {
     const [loading, setLoading] = useState(true)
     const [openCategories, setOpenCategories] = useState<Set<string>>(new Set())
     const [openSubcategories, setOpenSubcategories] = useState<Set<string>>(new Set())
-
+	const INTERACTIVE_TRAINING_URLS: Record<string, { url: string; description: string }> = {
+		'testandtreat': {
+			url: 'https://pharmacy-test-treat-o8k6.bolt.host',
+			description: '57 interactive modules • Group A Strep, Influenza & COVID-19'
+		},
+		'timemymeds': {
+			url: 'https://clinicalrxq-timemymeds.bolt.host',
+			description: 'Interactive medication synchronization training'
+		}
+	}
     useEffect(() => {
         if (slug) {
             fetchProgramData()
@@ -399,8 +408,8 @@ export function ClinicalProgramPage() {
                     </TabsContent>
 
                     <TabsContent value="training" className="space-y-6">
-						{/* Interactive Training Application */}
-	{program?.slug === 'testandtreat' && (
+	{/* Interactive Training Application */}
+	{program?.slug && INTERACTIVE_TRAINING_URLS[program.slug] && (
 		<Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2">
@@ -415,13 +424,13 @@ export function ClinicalProgramPage() {
 				<Button 
 					size="lg"
 					className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
-					onClick={() => window.open('https://pharmacy-test-treat-o8k6.bolt.host', '_blank')}
+					onClick={() => window.open(INTERACTIVE_TRAINING_URLS[program.slug].url, '_blank')}
 				>
 					<Play className="mr-2 h-5 w-5" />
 					Launch Interactive Training
 				</Button>
 				<p className="text-sm text-gray-600 mt-3">
-					Opens in new window • 57 interactive modules • Group A Strep, Influenza & COVID-19
+					Opens in new window • {INTERACTIVE_TRAINING_URLS[program.slug].description}
 				</p>
 			</CardContent>
 		</Card>
