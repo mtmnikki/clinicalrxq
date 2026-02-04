@@ -399,6 +399,33 @@ export function ClinicalProgramPage() {
                     </TabsContent>
 
                     <TabsContent value="training" className="space-y-6">
+						{/* Interactive Training Application */}
+	{program?.slug === 'testandtreat' && (
+		<Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+			<CardHeader>
+				<CardTitle className="flex items-center gap-2">
+					<Play className="h-5 w-5 text-blue-600" />
+					Interactive Training Application
+				</CardTitle>
+				<CardDescription>
+					Complete hands-on training with interactive exercises, practice scenarios, and assessment tools
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<Button 
+					size="lg"
+					className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
+					onClick={() => window.open('https://pharmacy-test-treat-o8k6.bolt.host', '_blank')}
+				>
+					<Play className="mr-2 h-5 w-5" />
+					Launch Interactive Training
+				</Button>
+				<p className="text-sm text-gray-600 mt-3">
+					Opens in new window • 57 interactive modules • Group A Strep, Influenza & COVID-19
+				</p>
+			</CardContent>
+		</Card>
+	)}
                         {trainingResources.length > 0 ? (
                             <div className="grid lg:grid-cols-3 gap-6">
                                 {/* Video Player */}
