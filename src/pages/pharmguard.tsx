@@ -1,30 +1,25 @@
 import React from 'react'
-import Header from '../components/layout/Header'
-
-const PHARMGUARD_URL = 'https://pharmguard.vercel.app'
+import { Button } from '../components/ui/button'
+import { PharmGuardApp } from '../features/pharmguard/PharmGuardApp'
+import { hasPharmGuardSupabaseConfig } from '../features/pharmguard/lib/supabase'
 
 export function PharmGuardPage() {
-	return (
-		<div className="min-h-screen bg-white">
-			<Header />
-			<div className="max-w-7xl mx-auto px-6 py-8">
-				<div className="mb-6">
-					<h1 className="text-3xl font-bold text-gray-900">PharmGuard</h1>
-					<p className="mt-2 text-gray-600">
-						Intervention logging, dashboard analytics, and history review are available below.
+	if (!hasPharmGuardSupabaseConfig) {
+		return (
+			<div className="min-h-screen bg-white px-6 py-12">
+				<div className="mx-auto max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-8">
+					<h1 className="text-3xl font-bold text-gray-900">PharmGuard configuration required</h1>
+					<p className="mt-3 text-gray-700">
+						Set <code>VITE_PHARMGUARD_SUPABASE_URL</code> and <code>VITE_PHARMGUARD_SUPABASE_ANON_KEY</code>
+						in ClinicalRxQ to enable the native PharmGuard page.
 					</p>
-				</div>
-				<div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-					<iframe
-						src={PHARMGUARD_URL}
-						title="PharmGuard"
-						className="block h-[calc(100vh-220px)] min-h-[900px] w-full bg-white"
-						loading="lazy"
-						referrerPolicy="strict-origin-when-cross-origin"
-						allow="clipboard-read; clipboard-write"
-					/>
+					<div className="mt-6">
+						<a href="/"><Button>Return Home</Button></a>
+					</div>
 				</div>
 			</div>
-		</div>
-	)
+		)
+	}
+
+	return <PharmGuardApp />
 }
