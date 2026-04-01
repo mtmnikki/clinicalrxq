@@ -56,10 +56,22 @@ export type Database = {
       pop: {
         Args: { queue_name: string }
         Returns: unknown[]
+        SetofOptions: {
+          from: "*"
+          to: "message_record"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       read: {
         Args: { n: number; queue_name: string; sleep_seconds: number }
         Returns: unknown[]
+        SetofOptions: {
+          from: "*"
+          to: "message_record"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       send: {
         Args: { message: Json; queue_name: string; sleep_seconds?: number }
@@ -86,8 +98,10 @@ export type Database = {
           city: string | null
           created_at: string | null
           email: string
+          id: string | null
           pharmacy_name: string | null
           pharmacy_phone: string | null
+          role: Database["public"]["Enums"]["role"]
           state: string | null
           subscription_status: string | null
           updated_at: string | null
@@ -99,8 +113,10 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           email: string
+          id?: string | null
           pharmacy_name?: string | null
           pharmacy_phone?: string | null
+          role?: Database["public"]["Enums"]["role"]
           state?: string | null
           subscription_status?: string | null
           updated_at?: string | null
@@ -112,8 +128,10 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           email?: string
+          id?: string | null
           pharmacy_name?: string | null
           pharmacy_phone?: string | null
+          role?: Database["public"]["Enums"]["role"]
           state?: string | null
           subscription_status?: string | null
           updated_at?: string | null
@@ -223,6 +241,135 @@ export type Database = {
           },
         ]
       }
+      claims: {
+        Row: {
+          account_balance: number | null
+          account_number: string | null
+          billing_status: string | null
+          cpt_hcpcs_code: string | null
+          created_at: string | null
+          id: string
+          insurance_adjustment: number | null
+          insurance_paid: number | null
+          notes: string | null
+          patient_id: string | null
+          patient_name: string
+          patient_paid_amount: number | null
+          patient_responsibility: number | null
+          payment_status: string | null
+          pharmacy_of_service: string | null
+          rx_number: string | null
+          service_date: string
+          statement_created_date: string | null
+          statement_mailed: boolean | null
+          statement_paid: boolean | null
+          statement_sent_2nd_at: string | null
+          statement_sent_3rd_at: string | null
+          statement_sent_at: string | null
+          statement_three_mailed: boolean | null
+          statement_two_mailed: boolean | null
+          total_charged_amount: number | null
+          updated_at: string | null
+          workflow: string | null
+        }
+        Insert: {
+          account_balance?: number | null
+          account_number?: string | null
+          billing_status?: string | null
+          cpt_hcpcs_code?: string | null
+          created_at?: string | null
+          id?: string
+          insurance_adjustment?: number | null
+          insurance_paid?: number | null
+          notes?: string | null
+          patient_id?: string | null
+          patient_name: string
+          patient_paid_amount?: number | null
+          patient_responsibility?: number | null
+          payment_status?: string | null
+          pharmacy_of_service?: string | null
+          rx_number?: string | null
+          service_date: string
+          statement_created_date?: string | null
+          statement_mailed?: boolean | null
+          statement_paid?: boolean | null
+          statement_sent_2nd_at?: string | null
+          statement_sent_3rd_at?: string | null
+          statement_sent_at?: string | null
+          statement_three_mailed?: boolean | null
+          statement_two_mailed?: boolean | null
+          total_charged_amount?: number | null
+          updated_at?: string | null
+          workflow?: string | null
+        }
+        Update: {
+          account_balance?: number | null
+          account_number?: string | null
+          billing_status?: string | null
+          cpt_hcpcs_code?: string | null
+          created_at?: string | null
+          id?: string
+          insurance_adjustment?: number | null
+          insurance_paid?: number | null
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_paid_amount?: number | null
+          patient_responsibility?: number | null
+          payment_status?: string | null
+          pharmacy_of_service?: string | null
+          rx_number?: string | null
+          service_date?: string
+          statement_created_date?: string | null
+          statement_mailed?: boolean | null
+          statement_paid?: boolean | null
+          statement_sent_2nd_at?: string | null
+          statement_sent_3rd_at?: string | null
+          statement_sent_at?: string | null
+          statement_three_mailed?: boolean | null
+          statement_two_mailed?: boolean | null
+          total_charged_amount?: number | null
+          updated_at?: string | null
+          workflow?: string | null
+        }
+        Relationships: []
+      }
+      csv_uploads: {
+        Row: {
+          created_at: string | null
+          errors: string | null
+          file_name: string
+          file_path: string
+          id: string
+          records_imported: number | null
+          status: string | null
+          upload_date: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          errors?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          records_imported?: number | null
+          status?: string | null
+          upload_date?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          errors?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          records_imported?: number | null
+          status?: string | null
+          upload_date?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       documentation_forms: {
         Row: {
           category: string | null
@@ -316,6 +463,177 @@ export type Database = {
             referencedColumns: ["file_id"]
           },
         ]
+      }
+      generated_statements: {
+        Row: {
+          account_number: string | null
+          claim_ids: string[] | null
+          created_at: string | null
+          id: string
+          patient_id: string | null
+          pdf_path: string | null
+          sent: boolean | null
+          sent_at: string | null
+          statement_date: string
+          statement_type: string | null
+          total_amount: number
+        }
+        Insert: {
+          account_number?: string | null
+          claim_ids?: string[] | null
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          pdf_path?: string | null
+          sent?: boolean | null
+          sent_at?: string | null
+          statement_date: string
+          statement_type?: string | null
+          total_amount: number
+        }
+        Update: {
+          account_number?: string | null
+          claim_ids?: string[] | null
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          pdf_path?: string | null
+          sent?: boolean | null
+          sent_at?: string | null
+          statement_date?: string
+          statement_type?: string | null
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_statements_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_statement_view"
+            referencedColumns: ["patient_id"]
+          },
+          {
+            foreignKeyName: "generated_statements_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interventions: {
+        Row: {
+          action_other: string | null
+          actions: string[] | null
+          clinical_notes: string | null
+          condition: string | null
+          cost_avoidance: number | null
+          created_at: string | null
+          drug_class: string | null
+          drug_name: string | null
+          drug_strength: string | null
+          encounter_dt: string | null
+          error_category: string | null
+          error_category_other: string | null
+          id: string
+          new_drug_class: string | null
+          new_drug_name: string | null
+          new_drug_strength: number | null
+          new_sig: string | null
+          new_strength_unit: string | null
+          patient_age: number | null
+          patient_gender: string | null
+          pharmacist_actions: string[] | null
+          pharmacist_id: string | null
+          pharmacy_site: string | null
+          practice_setting: string | null
+          prescriber_credentials: string | null
+          prescriber_location: string | null
+          prescriber_name: string | null
+          prescriber_npi: string | null
+          prescriber_response: string | null
+          prescriber_response_other: string | null
+          prob_ade: string | null
+          severity: string | null
+          sig: string | null
+          strength_unit: string | null
+          time_spent_min: number | null
+        }
+        Insert: {
+          action_other?: string | null
+          actions?: string[] | null
+          clinical_notes?: string | null
+          condition?: string | null
+          cost_avoidance?: number | null
+          created_at?: string | null
+          drug_class?: string | null
+          drug_name?: string | null
+          drug_strength?: string | null
+          encounter_dt?: string | null
+          error_category?: string | null
+          error_category_other?: string | null
+          id?: string
+          new_drug_class?: string | null
+          new_drug_name?: string | null
+          new_drug_strength?: number | null
+          new_sig?: string | null
+          new_strength_unit?: string | null
+          patient_age?: number | null
+          patient_gender?: string | null
+          pharmacist_actions?: string[] | null
+          pharmacist_id?: string | null
+          pharmacy_site?: string | null
+          practice_setting?: string | null
+          prescriber_credentials?: string | null
+          prescriber_location?: string | null
+          prescriber_name?: string | null
+          prescriber_npi?: string | null
+          prescriber_response?: string | null
+          prescriber_response_other?: string | null
+          prob_ade?: string | null
+          severity?: string | null
+          sig?: string | null
+          strength_unit?: string | null
+          time_spent_min?: number | null
+        }
+        Update: {
+          action_other?: string | null
+          actions?: string[] | null
+          clinical_notes?: string | null
+          condition?: string | null
+          cost_avoidance?: number | null
+          created_at?: string | null
+          drug_class?: string | null
+          drug_name?: string | null
+          drug_strength?: string | null
+          encounter_dt?: string | null
+          error_category?: string | null
+          error_category_other?: string | null
+          id?: string
+          new_drug_class?: string | null
+          new_drug_name?: string | null
+          new_drug_strength?: number | null
+          new_sig?: string | null
+          new_strength_unit?: string | null
+          patient_age?: number | null
+          patient_gender?: string | null
+          pharmacist_actions?: string[] | null
+          pharmacist_id?: string | null
+          pharmacy_site?: string | null
+          practice_setting?: string | null
+          prescriber_credentials?: string | null
+          prescriber_location?: string | null
+          prescriber_name?: string | null
+          prescriber_npi?: string | null
+          prescriber_response?: string | null
+          prescriber_response_other?: string | null
+          prob_ade?: string | null
+          severity?: string | null
+          sig?: string | null
+          strength_unit?: string | null
+          time_spent_min?: number | null
+        }
+        Relationships: []
       }
       kv_store_8a7dc670: {
         Row: {
@@ -487,6 +805,153 @@ export type Database = {
           },
         ]
       }
+      notes: {
+        Row: {
+          body: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          mood: string | null
+          pinned: boolean | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          mood?: string | null
+          pinned?: boolean | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          mood?: string | null
+          pinned?: boolean | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      patients: {
+        Row: {
+          account_number: string
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          patient_name: string
+          phone: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_number: string
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          patient_name: string
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_number?: string
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          patient_name?: string
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pharmacies: {
+        Row: {
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          contact_name: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          last_sync_at: string | null
+          name: string
+          notes: string | null
+          npi: string | null
+          phone: string | null
+          services: string[] | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_sync_at?: string | null
+          name: string
+          notes?: string | null
+          npi?: string | null
+          phone?: string | null
+          services?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_sync_at?: string | null
+          name?: string
+          notes?: string | null
+          npi?: string | null
+          phone?: string | null
+          services?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       programs: {
         Row: {
           created_at: string | null
@@ -615,6 +1080,7 @@ export type Database = {
           file_url: string
           form_category: Database["public"]["Enums"]["form_categories"] | null
           form_subcategory: string | null
+          last_modified: string | null
           medical_condition:
             | Database["public"]["Enums"]["medical_conditions"]
             | null
@@ -637,6 +1103,7 @@ export type Database = {
           file_url: string
           form_category?: Database["public"]["Enums"]["form_categories"] | null
           form_subcategory?: string | null
+          last_modified?: string | null
           medical_condition?:
             | Database["public"]["Enums"]["medical_conditions"]
             | null
@@ -659,6 +1126,7 @@ export type Database = {
           file_url?: string
           form_category?: Database["public"]["Enums"]["form_categories"] | null
           form_subcategory?: string | null
+          last_modified?: string | null
           medical_condition?:
             | Database["public"]["Enums"]["medical_conditions"]
             | null
@@ -1015,22 +1483,73 @@ export type Database = {
       }
       hypopg_hidden_indexes: {
         Row: {
-          am_name: unknown | null
-          index_name: unknown | null
-          indexrelid: unknown | null
+          am_name: unknown
+          index_name: unknown
+          indexrelid: unknown
           is_hypo: boolean | null
-          schema_name: unknown | null
-          table_name: unknown | null
+          schema_name: unknown
+          table_name: unknown
         }
         Relationships: []
       }
       hypopg_list_indexes: {
         Row: {
-          am_name: unknown | null
+          am_name: unknown
           index_name: string | null
-          indexrelid: unknown | null
-          schema_name: unknown | null
-          table_name: unknown | null
+          indexrelid: unknown
+          schema_name: unknown
+          table_name: unknown
+        }
+        Relationships: []
+      }
+      intervention_by_setting: {
+        Row: {
+          count: number | null
+          practice_setting: string | null
+        }
+        Relationships: []
+      }
+      intervention_by_site: {
+        Row: {
+          count: number | null
+          pharmacy_site: string | null
+        }
+        Relationships: []
+      }
+      intervention_drug_classes: {
+        Row: {
+          count: number | null
+          drug_class: string | null
+        }
+        Relationships: []
+      }
+      intervention_errors: {
+        Row: {
+          count: number | null
+          error_category: string | null
+        }
+        Relationships: []
+      }
+      intervention_kpis: {
+        Row: {
+          avg_time_min: number | null
+          high_risk_count: number | null
+          total_cost_avoidance: number | null
+          total_interventions: number | null
+        }
+        Relationships: []
+      }
+      intervention_responses: {
+        Row: {
+          count: number | null
+          prescriber_response: string | null
+        }
+        Relationships: []
+      }
+      intervention_severity: {
+        Row: {
+          count: number | null
+          severity: string | null
         }
         Relationships: []
       }
@@ -1341,6 +1860,23 @@ export type Database = {
             referencedColumns: ["program_id"]
           },
         ]
+      }
+      patient_statement_view: {
+        Row: {
+          account_number: string | null
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          any_statement_sent: boolean | null
+          date_of_birth: string | null
+          last_service_date: string | null
+          patient_id: string | null
+          patient_name: string | null
+          total_balance: number | null
+          total_claims: number | null
+        }
+        Relationships: []
       }
       testandtreat_training: {
         Row: {
@@ -1671,49 +2207,37 @@ export type Database = {
       }
     }
     Functions: {
-      bytea_to_text: {
-        Args: { data: string }
-        Returns: string
-      }
-      citext: {
-        Args: { "": boolean } | { "": string } | { "": unknown }
-        Returns: string
-      }
-      citext_hash: {
-        Args: { "": string }
-        Returns: number
-      }
-      citextin: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      citextout: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      citextrecv: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      citextsend: {
-        Args: { "": string }
-        Returns: string
-      }
-      crosstab: {
-        Args: { "": string }
-        Returns: Record<string, unknown>[]
-      }
+      bytea_to_text: { Args: { data: string }; Returns: string }
+      crosstab: { Args: { "": string }; Returns: Record<string, unknown>[] }
       crosstab2: {
         Args: { "": string }
         Returns: Database["public"]["CompositeTypes"]["tablefunc_crosstab_2"][]
+        SetofOptions: {
+          from: "*"
+          to: "tablefunc_crosstab_2"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       crosstab3: {
         Args: { "": string }
         Returns: Database["public"]["CompositeTypes"]["tablefunc_crosstab_3"][]
+        SetofOptions: {
+          from: "*"
+          to: "tablefunc_crosstab_3"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       crosstab4: {
         Args: { "": string }
         Returns: Database["public"]["CompositeTypes"]["tablefunc_crosstab_4"][]
+        SetofOptions: {
+          from: "*"
+          to: "tablefunc_crosstab_4"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_file_statistics: {
         Args: { p_days_back?: number; p_file_id: string }
@@ -1726,34 +2250,81 @@ export type Database = {
           unique_viewers: number
         }[]
       }
-      hash_encode: {
-        Args: { "": number }
-        Returns: string
-      }
+      get_user_pharmacy: { Args: never; Returns: string }
       http: {
         Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "http_request"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_delete: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_get: {
-        Args: { data: Json; uri: string } | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
+      http_delete:
+        | {
+            Args: { uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { content: string; content_type: string; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+      http_get:
+        | {
+            Args: { uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { data: Json; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       http_head: {
         Args: { uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       http_header: {
         Args: { field: string; value: string }
         Returns: Database["public"]["CompositeTypes"]["http_header"]
+        SetofOptions: {
+          from: "*"
+          to: "http_header"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       http_list_curlopt: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           curlopt: string
           value: string
@@ -1762,83 +2333,70 @@ export type Database = {
       http_patch: {
         Args: { content: string; content_type: string; uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_post: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { data: Json; uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
+      http_post:
+        | {
+            Args: { content: string; content_type: string; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { data: Json; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       http_put: {
         Args: { content: string; content_type: string; uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_reset_curlopt: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      http_reset_curlopt: { Args: never; Returns: boolean }
       http_set_curlopt: {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
-      hypopg: {
-        Args: Record<PropertyKey, never>
-        Returns: Record<string, unknown>[]
-      }
+      hypopg: { Args: never; Returns: Record<string, unknown>[] }
       hypopg_create_index: {
         Args: { sql_order: string }
         Returns: Record<string, unknown>[]
       }
-      hypopg_drop_index: {
-        Args: { indexid: unknown }
-        Returns: boolean
-      }
-      hypopg_get_indexdef: {
-        Args: { indexid: unknown }
-        Returns: string
-      }
+      hypopg_drop_index: { Args: { indexid: unknown }; Returns: boolean }
+      hypopg_get_indexdef: { Args: { indexid: unknown }; Returns: string }
       hypopg_hidden_indexes: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           indexid: unknown
         }[]
       }
-      hypopg_hide_index: {
-        Args: { indexid: unknown }
-        Returns: boolean
-      }
-      hypopg_relation_size: {
-        Args: { indexid: unknown }
-        Returns: number
-      }
-      hypopg_reset: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      hypopg_reset_index: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      hypopg_unhide_all_indexes: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      hypopg_unhide_index: {
-        Args: { indexid: unknown }
-        Returns: boolean
-      }
-      id_decode: {
-        Args: { "": string }
-        Returns: number[]
-      }
-      id_decode_once: {
-        Args: { "": string }
-        Returns: number
-      }
-      id_encode: {
-        Args: { "": number[] } | { "": number }
-        Returns: string
-      }
+      hypopg_hide_index: { Args: { indexid: unknown }; Returns: boolean }
+      hypopg_relation_size: { Args: { indexid: unknown }; Returns: number }
+      hypopg_reset: { Args: never; Returns: undefined }
+      hypopg_reset_index: { Args: never; Returns: undefined }
+      hypopg_unhide_all_indexes: { Args: never; Returns: undefined }
+      hypopg_unhide_index: { Args: { indexid: unknown }; Returns: boolean }
+      id_decode: { Args: { "": string }; Returns: number[] }
+      id_decode_once: { Args: { "": string }; Returns: number }
       index_advisor: {
         Args: { query: string }
         Returns: {
@@ -1850,10 +2408,8 @@ export type Database = {
           total_cost_before: Json
         }[]
       }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
+      is_admin_user: { Args: never; Returns: boolean }
       json_matches_schema: {
         Args: { instance: Json; schema: Json }
         Returns: boolean
@@ -1862,10 +2418,7 @@ export type Database = {
         Args: { instance: Json; schema: Json }
         Returns: boolean
       }
-      jsonschema_is_valid: {
-        Args: { schema: Json }
-        Returns: boolean
-      }
+      jsonschema_is_valid: { Args: { schema: Json }; Returns: boolean }
       jsonschema_validation_errors: {
         Args: { instance: Json; schema: Json }
         Returns: string[]
@@ -1879,10 +2432,7 @@ export type Database = {
           path: string
         }[]
       }
-      populate_storage_files_catalog: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      populate_storage_files_catalog: { Args: never; Returns: undefined }
       search_content: {
         Args: { search_term: string }
         Returns: {
@@ -1921,18 +2471,12 @@ export type Database = {
           subcategory: string
         }[]
       }
-      text_to_bytea: {
-        Args: { data: string }
-        Returns: string
-      }
+      text_to_bytea: { Args: { data: string }; Returns: string }
       track_file_access: {
         Args: { p_file_id: string; p_profile_id: string }
         Returns: undefined
       }
-      update_all_bookmark_file_names: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      update_all_bookmark_file_names: { Args: never; Returns: number }
       update_bookmark_by_resource_id: {
         Args: { resource_id_param: string }
         Returns: {
@@ -1941,6 +2485,12 @@ export type Database = {
           id: string
           profile_id: string | null
           resource_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bookmarks"
+          isOneToOne: true
+          isSetofReturn: false
         }
       }
       update_bookmark_file_name: {
@@ -1952,22 +2502,38 @@ export type Database = {
           profile_id: string | null
           resource_id: string
         }
+        SetofOptions: {
+          from: "*"
+          to: "bookmarks"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       update_resource_file_reference: {
         Args: { file_id: string; res_id: string; table_name: string }
         Returns: boolean
       }
-      urlencode: {
-        Args: { data: Json } | { string: string } | { string: string }
-        Returns: string
-      }
+      urlencode:
+        | { Args: { data: Json }; Returns: string }
+        | {
+            Args: { string: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { string: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
     }
     Enums: {
       form_categories:
-        | "intake"
-        | "assessment"
-        | "care_plan"
-        | "consent"
+        | "patient_intake"
+        | "pharmacist_assessment"
+        | "pharmacist_care_plan"
+        | "patient_consent"
         | "prescriber_communication"
         | "billing"
         | "outcomes_tips"
@@ -1999,11 +2565,12 @@ export type Database = {
         | "Intern"
         | "Admin"
         | "Pharmacy"
+      role: "admin" | "pharmacy"
       slug:
         | "timemymeds"
         | "mtmthefuturetoday"
         | "testandtreat"
-        | "hba1ctesting"
+        | "hba1c"
         | "oralcontraceptives"
         | "patienthandouts"
         | "clinicalguidelines"
@@ -2025,7 +2592,7 @@ export type Database = {
         value: string | null
       }
       http_request: {
-        method: unknown | null
+        method: unknown
         uri: string | null
         headers: Database["public"]["CompositeTypes"]["http_header"][] | null
         content_type: string | null
@@ -2070,6 +2637,7 @@ export type Database = {
           owner: string | null
           owner_id: string | null
           public: boolean | null
+          type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
         }
         Insert: {
@@ -2082,6 +2650,7 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
         }
         Update: {
@@ -2094,7 +2663,59 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      buckets_analytics: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          format: string
+          id: string
+          name: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          format?: string
+          id?: string
+          name: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          format?: string
+          id?: string
+          name?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      buckets_vectors: {
+        Row: {
+          created_at: string
+          id: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2125,7 +2746,6 @@ export type Database = {
           created_at: string | null
           id: string
           last_accessed_at: string | null
-          level: number | null
           metadata: Json | null
           name: string | null
           owner: string | null
@@ -2140,7 +2760,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
-          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -2155,7 +2774,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
-          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -2175,38 +2793,6 @@ export type Database = {
           },
         ]
       }
-      prefixes: {
-        Row: {
-          bucket_id: string
-          created_at: string | null
-          level: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string | null
-          level?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string | null
-          level?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prefixes_bucketId_fkey"
-            columns: ["bucket_id"]
-            isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       s3_multipart_uploads: {
         Row: {
           bucket_id: string
@@ -2214,6 +2800,7 @@ export type Database = {
           id: string
           in_progress_size: number
           key: string
+          metadata: Json | null
           owner_id: string | null
           upload_signature: string
           user_metadata: Json | null
@@ -2225,6 +2812,7 @@ export type Database = {
           id: string
           in_progress_size?: number
           key: string
+          metadata?: Json | null
           owner_id?: string | null
           upload_signature: string
           user_metadata?: Json | null
@@ -2236,6 +2824,7 @@ export type Database = {
           id?: string
           in_progress_size?: number
           key?: string
+          metadata?: Json | null
           owner_id?: string | null
           upload_signature?: string
           user_metadata?: Json | null
@@ -2305,49 +2894,83 @@ export type Database = {
           },
         ]
       }
+      vector_indexes: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id: string
+          metadata_configuration: Json | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id?: string
+          metadata_configuration?: Json | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          data_type?: string
+          dimension?: number
+          distance_metric?: string
+          id?: string
+          metadata_configuration?: Json | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vector_indexes_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets_vectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      add_prefixes: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: undefined
+      allow_any_operation: {
+        Args: { expected_operations: string[] }
+        Returns: boolean
+      }
+      allow_only_operation: {
+        Args: { expected_operation: string }
+        Returns: boolean
       }
       can_insert_object: {
         Args: { bucketid: string; metadata: Json; name: string; owner: string }
         Returns: undefined
       }
-      delete_prefix: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: boolean
+      delete_leaf_prefixes: {
+        Args: { bucket_ids: string[]; names: string[] }
+        Returns: undefined
       }
-      extension: {
-        Args: { name: string }
+      extension: { Args: { name: string }; Returns: string }
+      filename: { Args: { name: string }; Returns: string }
+      foldername: { Args: { name: string }; Returns: string[] }
+      get_common_prefix: {
+        Args: { p_delimiter: string; p_key: string; p_prefix: string }
         Returns: string
       }
-      filename: {
-        Args: { name: string }
-        Returns: string
-      }
-      foldername: {
-        Args: { name: string }
-        Returns: string[]
-      }
-      get_level: {
-        Args: { name: string }
-        Returns: number
-      }
-      get_prefix: {
-        Args: { name: string }
-        Returns: string
-      }
-      get_prefixes: {
-        Args: { name: string }
-        Returns: string[]
-      }
+      get_level: { Args: { name: string }; Returns: number }
+      get_prefix: { Args: { name: string }; Returns: string }
+      get_prefixes: { Args: { name: string }; Returns: string[] }
       get_size_by_bucket: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           bucket_id: string
           size: number
@@ -2370,25 +2993,66 @@ export type Database = {
       }
       list_objects_with_delimiter: {
         Args: {
-          bucket_id: string
+          _bucket_id: string
           delimiter_param: string
           max_keys?: number
           next_token?: string
           prefix_param: string
+          sort_order?: string
           start_after?: string
         }
         Returns: {
+          created_at: string
           id: string
+          last_accessed_at: string
           metadata: Json
           name: string
           updated_at: string
         }[]
       }
-      operation: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      operation: { Args: never; Returns: string }
       search: {
+        Args: {
+          bucketname: string
+          levels?: number
+          limits?: number
+          offsets?: number
+          prefix: string
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+      search_by_timestamp: {
+        Args: {
+          p_bucket_id: string
+          p_level: number
+          p_limit: number
+          p_prefix: string
+          p_sort_column: string
+          p_sort_column_after: string
+          p_sort_order: string
+          p_start_after: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          key: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+      search_legacy_v1: {
         Args: {
           bucketname: string
           levels?: number
@@ -2414,12 +3078,16 @@ export type Database = {
           levels?: number
           limits?: number
           prefix: string
+          sort_column?: string
+          sort_column_after?: string
+          sort_order?: string
           start_after?: string
         }
         Returns: {
           created_at: string
           id: string
           key: string
+          last_accessed_at: string
           metadata: Json
           name: string
           updated_at: string
@@ -2427,7 +3095,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2562,10 +3230,10 @@ export const Constants = {
   public: {
     Enums: {
       form_categories: [
-        "intake",
-        "assessment",
-        "care_plan",
-        "consent",
+        "patient_intake",
+        "pharmacist_assessment",
+        "pharmacist_care_plan",
+        "patient_consent",
         "prescriber_communication",
         "billing",
         "outcomes_tips",
@@ -2600,11 +3268,12 @@ export const Constants = {
         "Admin",
         "Pharmacy",
       ],
+      role: ["admin", "pharmacy"],
       slug: [
         "timemymeds",
         "mtmthefuturetoday",
         "testandtreat",
-        "hba1ctesting",
+        "hba1c",
         "oralcontraceptives",
         "patienthandouts",
         "clinicalguidelines",
@@ -2624,6 +3293,8 @@ export const Constants = {
     },
   },
   storage: {
-    Enums: {},
+    Enums: {
+      buckettype: ["STANDARD", "ANALYTICS", "VECTOR"],
+    },
   },
 } as const
