@@ -13,6 +13,7 @@ import { DashboardPage } from './pages/dashboard'
 import { ClinicalProgramPage } from './pages/clinical-program'
 import { ResourceLibraryPage } from './pages/resource-library'
 import { AccountPage } from './pages/account'
+import { PharmGuardPage } from './pages/pharmguard'
 
 function App() {
 	return (
@@ -26,6 +27,7 @@ function App() {
 								<Route path="/" element={<HomePage />} />
 								<Route path="/contact" element={<ContactPage />} />
 								<Route path="/login" element={<LoginPage />} />
+								<Route path="/pharmguard" element={<PharmGuardPage />} />
 								
 								{/* Protected Member Routes */}
 								<Route

@@ -17,6 +17,9 @@ const Header: React.FC = () => {
 						</h1>
 					</Link>
 					<div className="flex items-center gap-4">
+						<Link to="/pharmguard">
+							<Button variant="ghost">PharmGuard</Button>
+						</Link>
 						<Link to="/contact">
 							<Button variant="ghost">Contact</Button>
 						</Link>
