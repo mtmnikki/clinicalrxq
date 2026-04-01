@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import { Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Intervention } from '../../types';
 import { ERROR_CATEGORIES, SEVERITY_META, SEVERITY_OPTIONS } from '../../lib/constants';
@@ -84,6 +84,13 @@ export function History({ interventions, onClearAll }: HistoryProps) {
     return dt.replace('T', ' ').slice(0, 16);
   };
 
+  const renderField = (label: string, value: ReactNode) => (
+    <div className="min-w-0">
+      <div className="font-mono text-[0.55rem] uppercase tracking-[0.08em] text-[#888099]">{label}</div>
+      <div className="mt-1 font-mono text-[0.72rem] text-[#1A1825] break-words">{value}</div>
+    </div>
+  );
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5 mb-3 sm:mb-3.5 sm:items-center">
@@ -150,7 +157,72 @@ export function History({ interventions, onClearAll }: HistoryProps) {
         </div>
       </div>
 
-      <div className="bg-white/50 border-2 border-[#1A1825] shadow-[3px_3px_0_#1A1825] sm:shadow-[4px_4px_0_#1A1825] overflow-x-auto -mx-3 sm:mx-0">
+      <div className="xl:hidden space-y-3">
+        {paged.length === 0 ? (
+          <div className="bg-white/50 border-2 border-[#1A1825] shadow-[3px_3px_0_#1A1825] sm:shadow-[4px_4px_0_#1A1825]">
+            <div className="text-center py-8 sm:py-12 px-4 sm:px-6 font-serif text-[#888099] italic text-[0.85rem] sm:text-[0.9rem]">
+              <span className="text-[2rem] sm:text-[2.5rem] block mb-2 sm:mb-3 opacity-40">📋</span>
+              {interventions.length === 0
+                ? 'No interventions logged yet. Use the Log tab to document your first entry.'
+                : 'No matches for current filters.'}
+            </div>
+          </div>
+        ) : (
+          paged.map((intervention, idx) => {
+            const cost = intervention.cost_avoidance || 0;
+            return (
+              <div
+                key={intervention.id}
+                className="w-full min-w-[80%] bg-white/60 border-2 border-[#1A1825] shadow-[3px_3px_0_#1A1825] p-4"
+              >
+                <div className="flex items-start justify-between gap-3 border-b border-dashed border-[#DDD5C0] pb-3">
+                  <div>
+                    <div className="font-mono text-[0.58rem] uppercase tracking-[0.1em] text-[#888099]">
+                      Entry #{startIndex + idx + 1}
+                    </div>
+                    <div className="mt-1 font-mono text-sm font-bold text-[#1A1825]">
+                      {intervention.drug_name || '—'}
+                    </div>
+                  </div>
+                  <div className="shrink-0">{getSeverityBadge(intervention.severity_potential)}</div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-3">
+                  {renderField('Date / Time', formatDateTime(intervention.datetime))}
+                  {renderField('Site', intervention.pharmacy_site || '—')}
+                  {renderField('RPh', intervention.pharmacist_id || '—')}
+                  {renderField(
+                    'Error',
+                    <span className="inline-block bg-[#1A1825] px-1.5 py-0.5 text-[0.62rem] tracking-wide text-white">
+                      {ERROR_DISPLAY_NAMES[intervention.error_category] || intervention.error_category || '—'}
+                    </span>
+                  )}
+                  {renderField('Setting', intervention.practice_setting || '—')}
+                  {renderField('Probability', intervention.probability_ade ?? '—')}
+                  {renderField(
+                    'Cost Avoidance',
+                    <span
+                      style={{
+                        color: cost > 4000 ? '#1A6B38' : cost > 0 ? '#B07018' : '#888099',
+                        fontWeight: cost > 0 ? 700 : 400
+                      }}
+                    >
+                      {cost > 0 ? `$${cost.toLocaleString()}` : '—'}
+                    </span>
+                  )}
+                  {renderField('Time', intervention.time_spent_minutes || '—')}
+                  {renderField(
+                    'Response',
+                    intervention.prescriber_response?.replace(/_/g, ' ') || '—'
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="hidden xl:block bg-white/50 border-2 border-[#1A1825] shadow-[3px_3px_0_#1A1825] sm:shadow-[4px_4px_0_#1A1825] overflow-x-auto -mx-3 sm:mx-0">
         <table className="w-full border-collapse font-mono text-[0.65rem] sm:text-[0.7rem] min-w-[900px]">
           <thead>
             <tr className="bg-[#1A1825] text-white">
@@ -235,9 +307,6 @@ export function History({ interventions, onClearAll }: HistoryProps) {
             )}
           </tbody>
         </table>
-      </div>
-      <div className="sm:hidden text-center mt-2">
-        <span className="font-mono text-[0.6rem] text-[#888099] italic">Swipe to scroll table</span>
       </div>
 
       {filtered.length > PAGE_SIZE && (
