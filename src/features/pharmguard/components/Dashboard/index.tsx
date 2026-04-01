@@ -56,7 +56,7 @@ export function Dashboard() {
 
         <div className="bg-white/60 border-2 border-[#1A1825] shadow-[3px_3px_0_#1A1825] sm:shadow-[4px_4px_0_#1A1825] p-3 sm:p-5">
           <div className="font-mono text-[0.58rem] sm:text-[0.62rem] font-bold tracking-[0.1em] sm:tracking-[0.13em] uppercase text-[#3D3B52] mb-3 sm:mb-4 pb-2 border-b border-[#DDD5C0] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-            <span>Severity Distribution</span>
+            <span>Potential Severity Distribution</span>
             <span className="font-normal tracking-normal text-[#888099]">potential if uncaught</span>
           </div>
           <SeverityGrid counts={severityCounts} />

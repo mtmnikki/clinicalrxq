@@ -5,8 +5,6 @@ interface SeverityGridProps {
 }
 
 const SEVERITY_ORDER = [
-  'no_harm_admin',
-  'reached_no_harm',
   'monitoring_required',
   'temporary_harm',
   'hospitalization',
@@ -16,8 +14,6 @@ const SEVERITY_ORDER = [
 ];
 
 const SEVERITY_SHORT_LABELS: Record<string, string> = {
-  'no_harm_admin': 'Admin',
-  'reached_no_harm': 'No Harm',
   'monitoring_required': 'Monitor',
   'temporary_harm': 'Temp Harm',
   'hospitalization': 'Hospital',
@@ -36,7 +32,7 @@ export function SeverityGrid({ counts }: SeverityGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+    <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 sm:gap-2">
       {SEVERITY_ORDER.map((key) => {
         const meta = SEVERITY_META[key];
         const count = counts[key] || 0;

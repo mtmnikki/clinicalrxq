@@ -19,7 +19,7 @@ export function BarChart({ data, emptyMessage = 'No data yet.' }: BarChartProps)
       {data.map((item, idx) => (
         <div key={idx} className="flex items-center gap-1.5 sm:gap-2">
           <div
-            className="font-mono text-[0.58rem] sm:text-[0.65rem] text-[#3D3B52] w-20 sm:w-28 shrink-0 truncate"
+            className="font-mono text-[0.58rem] sm:text-[0.65rem] text-[#3D3B52] w-20 sm:w-28 shrink-0"
             title={item.label}
           >
             {item.label}
