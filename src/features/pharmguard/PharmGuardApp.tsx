@@ -67,9 +67,7 @@ export function PharmGuardApp() {
                 onSubmit={handleSubmit}
               />
             )}
-            {activeTab === 'dashboard' && (
-              <Dashboard interventions={interventions} />
-            )}
+            {activeTab === 'dashboard' && <Dashboard />}
             {activeTab === 'history' && (
               <History
                 interventions={interventions}

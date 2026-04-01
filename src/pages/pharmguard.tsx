@@ -8,10 +8,10 @@ export function PharmGuardPage() {
 		return (
 			<div className="min-h-screen bg-white px-6 py-12">
 				<div className="mx-auto max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-8">
-					<h1 className="text-3xl font-bold text-gray-900">PharmGuard configuration required</h1>
+					<h1 className="text-3xl font-bold text-gray-900">Supabase configuration required</h1>
 					<p className="mt-3 text-gray-700">
-						Set <code>VITE_PHARMGUARD_SUPABASE_URL</code> and <code>VITE_PHARMGUARD_SUPABASE_ANON_KEY</code>
-						in ClinicalRxQ to enable the native PharmGuard page.
+						Set <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>
+						in ClinicalRxQ to enable the PharmGuard page.
 					</p>
 					<div className="mt-6">
 						<a href="/"><Button>Return Home</Button></a>
